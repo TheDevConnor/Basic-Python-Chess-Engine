@@ -1,4 +1,6 @@
 # Basic-Python-Chess-Engine
+![Chess](https://media.discordapp.net/attachments/922630672219254834/993717978690486332/PythonChess.png?width=1248&height=702)
+
 This is a basic python chess engine! I do plan on adding an ai to this soon say make sure to follow the project!
 
 In order to use the project there is one python dependece you will nedd and that is the pygames module. Here is the command to install it
