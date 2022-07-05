@@ -15,5 +15,5 @@ https://www.youtube.com/watch?v=c_qNC1lL4qA
 
 Here is what the main board and pieces will look like
 
-![CHESS!](https://www.dropbox.com/s/i3boduwxh0b3sbm/Screenshot%202022-07-04%20163107.png?dl=0)
+![CHESS!](https://media.discordapp.net/attachments/922630672219254834/993716274842587227/Screenshot_2022-07-04_163107.png)
 
