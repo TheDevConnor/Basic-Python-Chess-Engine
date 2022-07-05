@@ -13,6 +13,10 @@ https://www.youtube.com/watch?v=c_qNC1lL4qA
 
 ---------------------------------------------------
 
+In order to run the program you must launch it from the ChessMain.py file
+
+---------------------------------------------------
+
 Here is what the main board and pieces will look like
 
 ![CHESS!](https://media.discordapp.net/attachments/922630672219254834/993716274842587227/Screenshot_2022-07-04_163107.png)
@@ -29,5 +33,5 @@ side. If you can find how to fix it plz let me know so i can fix that bug!
 
 It can also do En Passant!
 
-![CHESS!](En Passant)
+![CHESS!](https://media.discordapp.net/attachments/922630672219254834/993716274578325665/Screenshot_2022-07-04_230529.png)
 
