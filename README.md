@@ -11,7 +11,7 @@ if you pip is not working here is a video on how to set it up!
 
 https://www.youtube.com/watch?v=c_qNC1lL4qA
 
-==============================================================
+---------------------------------------------------
 
 Here is what the main board and pieces will look like
 
