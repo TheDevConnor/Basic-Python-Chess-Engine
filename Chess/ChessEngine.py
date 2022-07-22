@@ -376,7 +376,6 @@ class GameState():
             self.getKingSideCastle(r, c, moves, allyColor)
         if (self.whiteToMove and self.whiteCastleQueenSide) or (not self.whiteToMove and self.blackCaskteQueenSide):
             self.getQueenSideCastle(r, c, moves, allyColor)
-
     def getKingSideCastle(self, r, c, moves, allyColor):
         if self.board[r][c+1] == "--" and self.board[r][c+2] == "--" and \
             not self.squareUnderAttack(r, c+1, allyColor) and not self.squareUnderAttack(r, c+2, allyColor):
