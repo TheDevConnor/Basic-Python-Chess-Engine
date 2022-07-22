@@ -1,11 +1,32 @@
 # Handles the user input and game state information
 
+
 import pygame as p
 import ChessEngine
+#OS and SYS libraries are used for checking the working directory and OS
+import sys, os
 
 # Changes the title of the window and the programs image
 p.display.set_caption('Chess')
-p.display.set_icon(p.image.load("Chess\images\chess.png"))
+# Check the OS, because using backslashes in paths is not POSIX friendly, making it compatible with MacOS, and Linux
+ImageWinPath = "Chess\images\chess.png"
+ImageLinuxPath = "Chess/images/chess.png"
+ImageDirWin = "Chess\images\\"
+ImageDirLinux = "Chess/images/chess.png/"
+#check if the game is being ran inside the Chess folder, so its compatible either way
+if(os.getcwd().endswith("Chess")):
+    ImageWinPath = "images\chess.png"
+    ImageLinuxPath = "images/chess.png"
+    ImageDirWin = "images\\"
+    ImageDirLinux = "images/"
+
+os=sys.platform
+if(os == "win32"):
+    p.display.set_icon(p.image.load(ImageWinPath))
+elif(os == "cygwin"):
+    p.display.set_icon(p.image.load(ImageLinuxPath))
+else:
+    p.display.set_icon(p.image.load(ImageLinuxPath))
 
 WIDTH = HEIGHT = 500  # 500 is the best size for the window do to the size and reselution of the pieces
 DIMENSION = 8  # dimensions of a chess board are 8x8
@@ -18,12 +39,16 @@ IMAGES = {}
 def load_images():
     pieces = ["--","wp", "wN", "wB", "wR", "wQ", "wK", "bp", "bN", "bB", "bR", "bQ", "bK"]
     for piece in pieces:
-        IMAGES[piece] = p.transform.scale(p.image.load("Chess/images/" + piece + ".png"), (SQ_SIZE, SQ_SIZE))
+        if(os == "win32"):
+            IMAGES[piece] = p.transform.scale(p.image.load(ImageDirWin + piece + ".png"), (SQ_SIZE, SQ_SIZE))
+        elif(os == "cygwin"):
+            IMAGES[piece] = p.transform.scale(p.image.load(ImageDirWin + piece + ".png"), (SQ_SIZE, SQ_SIZE))
+        else:
+            IMAGES[piece] = p.transform.scale(p.image.load(ImageDirLinux + piece + ".png"), (SQ_SIZE, SQ_SIZE))
     # Note: we can access an image by saying  'IMAGES['wp']'
 
 
 # This will handle the user input and update the graphics
-
 def main():
     p.init()
     screen = p.display.set_mode((WIDTH, HEIGHT))
