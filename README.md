@@ -16,7 +16,12 @@ https://www.youtube.com/watch?v=c_qNC1lL4qA
 ---------------------------------------------------
 
 In order to run the program you must launch it from the ChessMain.py file
-
+e.g.
+```
+$ python ChessMain.py
+// OR
+$ python Chess/ChessMain.py
+```
 ---------------------------------------------------
 
 Here is what the main board and pieces will look like
