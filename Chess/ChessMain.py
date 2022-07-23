@@ -19,56 +19,38 @@ ImageWinPath = ".\Chess\images\chess.png"
 ImageLinuxPath = "./Chess/images/chess.png"
 ImageDirWin = ".\Chess\images\\"
 ImageDirLinux = "./Chess/images/"
-_os=sys.platform
+
 MusicWinPath = ".\Chess\Chess_Music.mp3"
 MusicLinuxPath = "./Chess/Chess_Music.mp3"
 #check if the game is being ran inside the Chess folder, so its compatible either way
-pattern = "*"
-if(os.getcwd().endswith("Chess")):
-    compliantSlash:str = None
-    if(_os == "win32"):
-        compliantSlash = "\\"
-    elif(_os == "cygwin"):
-        compliantSlash = "\\"
-    else:
-        compliantSlash = "/"
-    if(fnmatch.fnmatch(os.getcwd(), ("*" + compliantSlash + "Chess" + compliantSlash + "Chess"))):
-        ImageLinuxPath = "./images/chess.png"
-        ImageDirLinux = "./images/"
-        ImageDirWin = "images\\"
-        ImageWinPath = ".\images\chess.png"
-        inChessDir = True
-    elif(fnmatch.fnmatch(os.getcwd(), ("*" + compliantSlash + "Chess"))):
-        ImageLinuxPath = "./images/chess.png"
-        ImageDirLinux = "./images/"
-        ImageDirWin = "images\\"
-        ImageWinPath = ".\images\chess.png"
-        inChessDir = True
-    else:
-        ImageWinPath = ".\Chess\images\chess.png"
-        ImageLinuxPath = "./Chess/images/chess.png"
-        ImageDirWin = ".\Chess\images\\"
-        ImageDirLinux = "./Chess/images/"
-        inChessDir = False
-if(_os == "win32"):
+if(os.getcwd().endswith("Chess") and os.getcwd().endswith("Chess/Chess") or os.getcwd().endswith("Chess\Chess")):
+    ImageWinPath = ".\images\chess.png"
+    ImageLinuxPath = "./images/chess.png"
+    ImageDirWin = "images\\"
+    ImageDirLinux = "./images/"
+
+os=sys.platform
+if(os == "win32"):
     p.display.set_icon(p.image.load(ImageWinPath))
     mixer.music.load(MusicWinPath)
-elif(_os == "cygwin"):
+elif(os == "cygwin"):
     p.display.set_icon(p.image.load(ImageLinuxPath))
     mixer.music.load(MusicWinPath)
 else:
     p.display.set_icon(p.image.load(ImageLinuxPath))
     mixer.music.load(MusicLinuxPath)
 
-WIDTH = HEIGHT = 500  # 500 is the best size for the window do to the size and reselution of the pieces
+BOARD_WIDTH = BOARD_HEIGHT = 500  # 500 is the best size for the window do to the size and reselution of the pieces
+MOVE_LOG_PANEL_WIDTH = 250
+MOVE_LOG_PANEL_HEIGHT = BOARD_HEIGHT
 DIMENSION = 8  # dimensions of a chess board are 8x8
-SQ_SIZE = HEIGHT // DIMENSION
+SQ_SIZE = BOARD_HEIGHT // DIMENSION
 MAX_FPS = 15  # For animation later on
 IMAGES = {}
 DEBUG_MODE = True
 
 # Play Music
-mixer.music.play()
+#mixer.music.play()
 
 # Loading the images and will initialize a global dictionary of images.
 
@@ -89,7 +71,7 @@ def load_images():
 def main():
     DebuggerWindow.createDebuggerWindow(DEBUG_MODE, inChessDir)
     p.init()
-    screen = p.display.set_mode((WIDTH, HEIGHT))
+    screen = p.display.set_mode((BOARD_WIDTH + MOVE_LOG_PANEL_WIDTH, BOARD_HEIGHT))
     clock = p.time.Clock()
     screen.fill(p.Color("black"))
     gs = ChessEngine.GameState()
@@ -98,6 +80,8 @@ def main():
     moveMade = False # The flag varuable for when the game state is changed or move is made
 
     animate = False # Falg variable for when we should animate a move
+
+    moveLogFont = p.font.SysFont("Poppin", 32, False, False)
 
     load_images() # Only do this once, before the while loop.
     running = True
@@ -108,7 +92,7 @@ def main():
     gameOver = False
 
     playerOne = True # IF a person is playing white then the varuable will be true while if ai plays then false
-    playerTwo = False # Same as a bove just for black
+    playerTwo = True # Same as a bove just for black
 
     while running:
         #Check to see if a human is playing
@@ -126,7 +110,7 @@ def main():
                     col = location[0] //SQ_SIZE
                     row = location[1] //SQ_SIZE
 
-                    if sqSelected == (row, col): #  The user clicked the same square twice
+                    if sqSelected == (row, col) or col >= 8: #  The user clicked the same square twice
                         sqSelected = () # deslected
                         playerClicks = [] # Clear the player clicks
                     else:
@@ -178,7 +162,7 @@ def main():
             moveMade = False
             animate = False
 
-        drawGameState(screen, gs, valid_moves, sqSelected)
+        drawGameState(screen, gs, valid_moves, sqSelected, moveLogFont)
 
         if gs.checkmate:
             gameOver = True
@@ -214,10 +198,11 @@ def highlightSquares(screen, gs, valid_Moves, sqSelected):
 
 # Responsible for all the graphics within the current gamestate.
 
-def drawGameState(screen, gs, valid_Moves, sqSelected):
+def drawGameState(screen, gs, valid_Moves, sqSelected, moveLogFont):
     drawBoard(screen) # Draws the squares on the board
     highlightSquares(screen, gs, valid_Moves, sqSelected)
     drawPieces(screen, gs.board) # Draw the pieces on the board
+    draw_move_log(screen, gs, moveLogFont)
 
 # draw the squares on the board
 
@@ -269,10 +254,28 @@ def animateMove(move, screen, board, clock):
         p.display.flip()
         clock.tick(60)
 
+def draw_move_log(screen, gs, font):
+    move_log_rect = p.Rect(BOARD_WIDTH, 0, MOVE_LOG_PANEL_WIDTH, MOVE_LOG_PANEL_HEIGHT)
+    p.draw.rect(screen, p.Color("black"), move_log_rect)
+
+    move_log = gs.moveLog
+    move_texts = move_log
+    padding = 5
+    line_spacing = 10
+    text_y = padding
+
+    for i in range(len(move_texts)):
+        text = move_texts[i].getChessNotation()
+        textObj = font.render(text, True, p.Color('white'))
+        textLoc = move_log_rect.move(padding, text_y)
+        screen.blit(textObj, textLoc)
+        text_y += textObj.get_height() + line_spacing
+
+
 def drawText(screen, text):
     font = p.font.SysFont("Poppin", 32, False, False)
     textObj = font.render(text, 0, p.Color('Gray'))
-    textLoc = p.Rect(0, 0, WIDTH, HEIGHT).move(WIDTH/2 - textObj.get_width() / 2, HEIGHT / 2 - textObj.get_height() / 2)
+    textLoc = p.Rect(0, 0, BOARD_WIDTH, BOARD_HEIGHT).move(BOARD_WIDTH/2 - textObj.get_width() / 2, BOARD_HEIGHT / 2 - textObj.get_height() / 2)
     screen.blit(textObj, textLoc)
     textObj = font.render(text, 0, p.Color('Black'))
     screen.blit(textObj, textLoc.move(2, 1))
