@@ -1,24 +1,23 @@
 # Handles the user input and game state information
 
-
 import pygame as p
-import ChessEngine
-#OS and SYS libraries are used for checking the working directory and OS
+import ChessEngine, ChessAi
 import sys, os
 
 # Changes the title of the window and the programs image
 p.display.set_caption('Chess')
+
 # Check the OS, because using backslashes in paths is not POSIX friendly, making it compatible with MacOS, and Linux
-ImageWinPath = "Chess\images\chess.png"
-ImageLinuxPath = "Chess/images/chess.png"
-ImageDirWin = "Chess\images\\"
-ImageDirLinux = "Chess/images/chess.png/"
+ImageWinPath = ".\Chess\images\chess.png"
+ImageLinuxPath = "./Chess/images/chess.png"
+ImageDirWin = ".\Chess\images\\"
+ImageDirLinux = "./Chess/images/"
 #check if the game is being ran inside the Chess folder, so its compatible either way
-if(os.getcwd().endswith("Chess")):
-    ImageWinPath = "images\chess.png"
-    ImageLinuxPath = "images/chess.png"
+if(os.getcwd().endswith("Chess") and os.getcwd().endswith("Chess/Chess") or os.getcwd().endswith("Chess\Chess")):
+    ImageWinPath = ".\images\chess.png"
+    ImageLinuxPath = "./images/chess.png"
     ImageDirWin = "images\\"
-    ImageDirLinux = "images/"
+    ImageDirLinux = "./images/"
 
 os=sys.platform
 if(os == "win32"):
@@ -49,6 +48,7 @@ def load_images():
 
 
 # This will handle the user input and update the graphics
+
 def main():
     p.init()
     screen = p.display.set_mode((WIDTH, HEIGHT))
@@ -56,7 +56,7 @@ def main():
     screen.fill(p.Color("black"))
     gs = ChessEngine.GameState()
 
-    validMoves = gs.validMoves()
+    valid_Moves = gs.valid_Moves()
     moveMade = False # The flag varuable for when the game state is changed or move is made
 
     animate = False # Falg variable for when we should animate a move
@@ -69,62 +69,76 @@ def main():
 
     gameOver = False
 
+    playerOne = True # IF a person is playing white then the varuable will be true while if ai plays then false
+    playerTwo = False # Same as a bove just for black
+
     while running:
+        #Check to see if a human is playing
+        isHumanTurn = (gs.whiteToMove and playerOne) or (not gs.whiteToMove and playerTwo)
+
         for e in p.event.get():
             if e.type == p.QUIT:
                 running = False
 
             # Mouse Input Handler
             elif e.type == p.MOUSEBUTTONDOWN:
-                location = p.mouse.get_pos() # This is the postion of the (x,y) location of the mouse
-            
-                col = location[0] //SQ_SIZE
-                row = location[1] //SQ_SIZE
-
-                if sqSelected == (row, col): #  The user clicked the same square twice
-                    sqSelected = () # deslected
-                    playerClicks = [] # Clear the player clicks
-                else:
-                    sqSelected = (row, col)
-                    playerClicks.append(sqSelected) # Append for both first and secound clicks
+                if not gameOver and isHumanTurn:
+                    location = p.mouse.get_pos() # This is the postion of the (x,y) location of the mouse
                 
-                if len(playerClicks) == 2: # After the secound click
-                    move = ChessEngine.Move(playerClicks[0], playerClicks[1], gs.board)
-                    print(move.getChessNotation())
+                    col = location[0] //SQ_SIZE
+                    row = location[1] //SQ_SIZE
 
-                    for i in range(len(validMoves)):
-                        if move == validMoves[i]:
-                            gs.makeMove(validMoves[i])
-                            moveMade = True
-                            animate = True
-                            sqSelected = () # Reset the user clicks
-                            playerClicks = []
-                    if not moveMade:
-                        playerClicks = [sqSelected]
+                    if sqSelected == (row, col): #  The user clicked the same square twice
+                        sqSelected = () # deslected
+                        playerClicks = [] # Clear the player clicks
+                    else:
+                        sqSelected = (row, col)
+                        playerClicks.append(sqSelected) # Append for both first and secound clicks
+                    
+                    if len(playerClicks) == 2: # After the secound click
+                        move = ChessEngine.Move(playerClicks[0], playerClicks[1], gs.board)
+                        print(move.getChessNotation())
+
+                        for i in range(len(valid_Moves)):
+                            if move == valid_Moves[i]:
+                                gs.make_move(valid_Moves[i])
+                                moveMade = True
+                                animate = True
+                                sqSelected = () # Reset the user clicks
+                                playerClicks = []
+                        if not moveMade:
+                            playerClicks = [sqSelected]
 
             # Key Handler
             elif e.type == p.KEYDOWN:
-                if e.key == p.K_z: # Undos when 'z' is pressed
-                    gs.undoMove()
+                if e.key == p.K_u: # Undos when 'u' is pressed
+                    gs.undo_move()
                     moveMade = True
                     animate = False
 
                 if e.key == p.K_r: # Reset the board when 'r' is pressed
                     gs = ChessEngine.GameState()
-                    validMoves = gs.validMoves()
+                    valid_Moves = gs.valid_Moves()
                     sqSelected = ()
                     playerClicks = []
                     moveMade = False
                     animate = False
 
+        # The Ai move finder object
+        if not gameOver and not isHumanTurn:
+            AIMove = ChessAi.FindRandomMoce(valid_Moves)
+            gs.make_move(AIMove)
+            moveMade = True
+            animate = True
+
         if moveMade:
             if animate:
                 animateMove(gs.moveLog[-1], screen, gs.board, clock)
-            validMoves = gs.validMoves()
+            valid_Moves = gs.valid_Moves()
             moveMade = False
             animate = False
 
-        drawGameState(screen, gs, validMoves, sqSelected)
+        drawGameState(screen, gs, valid_Moves, sqSelected)
 
         if gs.checkmate:
             gameOver = True
@@ -140,9 +154,10 @@ def main():
         clock.tick(MAX_FPS)
         p.display.flip()
 
+
 # Highlight the square selected on the board and the piece selected
 
-def highlightSquares(screen, gs, validMoves, sqSelected):
+def highlightSquares(screen, gs, valid_Moves, sqSelected):
     if sqSelected != ():
         r, c = sqSelected
         if gs.board[r][c][0] == ('w' if gs.whiteToMove else 'b'): # sqSelected is a piece that can be moved
@@ -153,15 +168,15 @@ def highlightSquares(screen, gs, validMoves, sqSelected):
             screen.blit(s, (c*SQ_SIZE, r*SQ_SIZE))
             #Highlight moves from that square
             s.fill(p.Color('olivedrab1'))
-            for move in validMoves:
+            for move in valid_Moves:
                 if move.startRow == r and move.startCol == c:
                     screen.blit(s, (SQ_SIZE*move.endCol, SQ_SIZE*move.endRow))
 
 # Responsible for all the graphics within the current gamestate.
 
-def drawGameState(screen, gs, validMoves, sqSelected):
+def drawGameState(screen, gs, valid_Moves, sqSelected):
     drawBoard(screen) # Draws the squares on the board
-    highlightSquares(screen, gs, validMoves, sqSelected)
+    highlightSquares(screen, gs, valid_Moves, sqSelected)
     drawPieces(screen, gs.board) # Draw the pieces on the board
 
 # draw the squares on the board
@@ -216,7 +231,7 @@ def animateMove(move, screen, board, clock):
 
 def drawText(screen, text):
     font = p.font.SysFont("Poppin", 32, False, False)
-    textObj = font.render(text, 0, p.Color('White'))
+    textObj = font.render(text, 0, p.Color('Gray'))
     textLoc = p.Rect(0, 0, WIDTH, HEIGHT).move(WIDTH/2 - textObj.get_width() / 2, HEIGHT / 2 - textObj.get_height() / 2)
     screen.blit(textObj, textLoc)
     textObj = font.render(text, 0, p.Color('Black'))
