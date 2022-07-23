@@ -35,14 +35,14 @@ if(os.getcwd().endswith("Chess")):
     if(fnmatch.fnmatch(os.getcwd(), ("*" + compliantSlash + "Chess" + compliantSlash + "Chess"))):
         ImageLinuxPath = "./images/chess.png"
         ImageDirLinux = "./images/"
-        ImageDirWin = "images\\"
+        ImageDirWin = ".\images\\"
         ImageWinPath = ".\images\chess.png"
         inChessDir = True
     elif(fnmatch.fnmatch(os.getcwd(), ("*" + compliantSlash + "Chess"))):
-        ImageLinuxPath = "./images/chess.png"
-        ImageDirLinux = "./images/"
-        ImageDirWin = "images\\"
-        ImageWinPath = ".\images\chess.png"
+        ImageLinuxPath = "./Chess/images/chess.png"
+        ImageDirLinux = "./Chess/images/"
+        ImageDirWin = ".\Chess\images\\"
+        ImageWinPath = ".\Chess\images\chess.png"
         inChessDir = True
     else:
         ImageWinPath = ".\Chess\images\chess.png"
@@ -75,9 +75,9 @@ mixer.music.play()
 def load_images():
     pieces = ["--","wp", "wN", "wB", "wR", "wQ", "wK", "bp", "bN", "bB", "bR", "bQ", "bK"]
     for piece in pieces:
-        if(os == "win32"):
+        if(_os == "win32"):
             IMAGES[piece] = p.transform.scale(p.image.load(ImageDirWin + piece + ".png"), (SQ_SIZE, SQ_SIZE))
-        elif(os == "cygwin"):
+        elif(_os == "cygwin"):
             IMAGES[piece] = p.transform.scale(p.image.load(ImageDirWin + piece + ".png"), (SQ_SIZE, SQ_SIZE))
         else:
             IMAGES[piece] = p.transform.scale(p.image.load(ImageDirLinux + piece + ".png"), (SQ_SIZE, SQ_SIZE))
