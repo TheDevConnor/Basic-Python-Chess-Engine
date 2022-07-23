@@ -13,7 +13,7 @@ ImageLinuxPath = "./Chess/images/chess.png"
 ImageDirWin = ".\Chess\images\\"
 ImageDirLinux = "./Chess/images/"
 #check if the game is being ran inside the Chess folder, so its compatible either way
-if(os.getcwd().endswith("Chess")):
+if(os.getcwd().endswith("Chess") and os.getcwd().endswith("Chess/Chess") or os.getcwd().endswith("Chess\Chess")):
     ImageWinPath = ".\images\chess.png"
     ImageLinuxPath = "./images/chess.png"
     ImageDirWin = "images\\"
