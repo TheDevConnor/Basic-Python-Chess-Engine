@@ -1,17 +1,22 @@
 # Handles the user input and game state information
 
 import pygame as p
+from pygame import mixer
 import ChessEngine, ChessAi
 import sys, os
 
 # Changes the title of the window and the programs image
 p.display.set_caption('Chess')
+mixer.init()
 
 # Check the OS, because using backslashes in paths is not POSIX friendly, making it compatible with MacOS, and Linux
 ImageWinPath = ".\Chess\images\chess.png"
 ImageLinuxPath = "./Chess/images/chess.png"
 ImageDirWin = ".\Chess\images\\"
 ImageDirLinux = "./Chess/images/"
+
+MusicWinPath = ".\Chess\Chess_Music.mp3"
+MusicLinuxPath = "./Chess/Chess_Music.mp3"
 #check if the game is being ran inside the Chess folder, so its compatible either way
 if(os.getcwd().endswith("Chess") and os.getcwd().endswith("Chess/Chess") or os.getcwd().endswith("Chess\Chess")):
     ImageWinPath = ".\images\chess.png"
@@ -22,16 +27,22 @@ if(os.getcwd().endswith("Chess") and os.getcwd().endswith("Chess/Chess") or os.g
 os=sys.platform
 if(os == "win32"):
     p.display.set_icon(p.image.load(ImageWinPath))
+    mixer.music.load(MusicWinPath)
 elif(os == "cygwin"):
     p.display.set_icon(p.image.load(ImageLinuxPath))
+    mixer.music.load(MusicWinPath)
 else:
     p.display.set_icon(p.image.load(ImageLinuxPath))
+    mixer.music.load(MusicLinuxPath)
 
 WIDTH = HEIGHT = 500  # 500 is the best size for the window do to the size and reselution of the pieces
 DIMENSION = 8  # dimensions of a chess board are 8x8
 SQ_SIZE = HEIGHT // DIMENSION
 MAX_FPS = 15  # For animation later on
 IMAGES = {}
+
+# Play Music
+mixer.music.play()
 
 # Loading the images and will initialize a global dictionary of images.
 
