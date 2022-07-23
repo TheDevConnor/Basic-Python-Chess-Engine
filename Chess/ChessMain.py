@@ -20,6 +20,8 @@ ImageLinuxPath = "./Chess/images/chess.png"
 ImageDirWin = ".\Chess\images\\"
 ImageDirLinux = "./Chess/images/"
 _os=sys.platform
+MusicWinPath = ".\Chess\Chess_Music.mp3"
+MusicLinuxPath = "./Chess/Chess_Music.mp3"
 #check if the game is being ran inside the Chess folder, so its compatible either way
 pattern = "*"
 if(os.getcwd().endswith("Chess")):
@@ -50,6 +52,7 @@ if(os.getcwd().endswith("Chess")):
         inChessDir = False
 if(_os == "win32"):
     p.display.set_icon(p.image.load(ImageWinPath))
+    mixer.music.load(MusicWinPath)
 elif(_os == "cygwin"):
     p.display.set_icon(p.image.load(ImageLinuxPath))
     mixer.music.load(MusicWinPath)
