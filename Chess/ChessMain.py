@@ -42,7 +42,7 @@ MAX_FPS = 15  # For animation later on
 IMAGES = {}
 
 # Play Music
-mixer.music.play()
+#mixer.music.play()
 
 # Loading the images and will initialize a global dictionary of images.
 
@@ -81,7 +81,7 @@ def main():
     gameOver = False
 
     playerOne = True # IF a person is playing white then the varuable will be true while if ai plays then false
-    playerTwo = False # Same as a bove just for black
+    playerTwo = True # Same as a bove just for black
 
     while running:
         #Check to see if a human is playing

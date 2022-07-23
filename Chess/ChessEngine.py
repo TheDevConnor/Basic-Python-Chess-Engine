@@ -44,6 +44,9 @@ class GameState():
 
 
     def make_move(self, move):
+        if self.get_cell(move.endRow, move.endCol) is None:
+            return False
+
         self.board[move.startRow][move.startCol] = "--"
         self.board[move.endRow][move.endCol] = move.pieceMoved
         self.moveLog.append(move) # log the move in order to undo it
@@ -57,8 +60,8 @@ class GameState():
 
         # Pawn Promotion
         if move.isPawnPromotion:
-            promotedPiece = input("Promote to Q, R, B, or N:")
-            self.board[move.endRow][move.endCol] = move.pieceMoved[0] + promotedPiece
+            #promotedPiece = input("Promote to Q, R, B, or N:")
+            self.board[move.endRow][move.endCol] = move.pieceMoved[0] + 'Q'
 
         # Enpassant
         if move.isEnpassantMove:
@@ -82,6 +85,8 @@ class GameState():
         self.update_castle_rights(move)
         self.castleRightsLog.append(CastleRights(self.currentCastlingRight.wks, self.currentCastlingRight.bks,
                                                  self.currentCastlingRight.wqs, self.currentCastlingRight.bqs))
+
+        return True
 
 
     def undo_move(self):
@@ -350,16 +355,22 @@ class GameState():
 
     
     def get_king_side_castle(self, r, c, moves):
-        if self.board[r][c+1] == '--' and self.board[r][c+2] == '--':
+        if self.get_cell(r, c+1) == '--' and self.get_cell(r, c+2) == '--':
             if not self.square_under_attack(r, c+1) and not self.square_under_attack(r, c+2):
                 moves.append(Move((r, c), (r, c+2), self.board, castle=True))
 
 
     def get_queen_side_castle(self, r, c, moves):
-        if self.board[r][c-1] == '--' and self.board[r][c-2] == '--' and self.board[r][c-3]:
+        if self.get_cell(r, c-1) == '--' and self.get_cell(r, c-2) == '--' and self.get_cell(r, c-3):
             if not self.square_under_attack(r, c-1) and not self.square_under_attack(r, c-2):
                 moves.append(Move((r, c), (r, c-2), self.board, castle=True))
 
+    
+    def get_cell(self, r, c):
+        if r < 0 or r >= 8 or c < 0 or c >= 8:
+            return None
+
+        return self.board[r][c]
 
 class CastleRights():
     def __init__(self, wks, bks, wqs, bqs):
