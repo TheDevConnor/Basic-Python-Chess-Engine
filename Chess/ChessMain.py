@@ -3,26 +3,52 @@
 import pygame as p
 import ChessEngine, ChessAi
 import sys, os
+import DebuggerWindow
+import fnmatch
 
 # Changes the title of the window and the programs image
 p.display.set_caption('Chess')
+
+global inChessDir
+inChessDir = None
 
 # Check the OS, because using backslashes in paths is not POSIX friendly, making it compatible with MacOS, and Linux
 ImageWinPath = ".\Chess\images\chess.png"
 ImageLinuxPath = "./Chess/images/chess.png"
 ImageDirWin = ".\Chess\images\\"
 ImageDirLinux = "./Chess/images/"
+_os=sys.platform
 #check if the game is being ran inside the Chess folder, so its compatible either way
-if(os.getcwd().endswith("Chess") and os.getcwd().endswith("Chess/Chess") or os.getcwd().endswith("Chess\Chess")):
-    ImageWinPath = ".\images\chess.png"
-    ImageLinuxPath = "./images/chess.png"
-    ImageDirWin = "images\\"
-    ImageDirLinux = "./images/"
-
-os=sys.platform
-if(os == "win32"):
+pattern = "*"
+if(os.getcwd().endswith("Chess")):
+    compliantSlash:str = None
+    if(_os == "win32"):
+        compliantSlash = "\\"
+    elif(_os == "cygwin"):
+        compliantSlash = "\\"
+    else:
+        compliantSlash = "/"
+    if(fnmatch.fnmatch(os.getcwd(), ("*" + compliantSlash + "Chess" + compliantSlash + "Chess"))):
+        ImageLinuxPath = "./images/chess.png"
+        ImageDirLinux = "./images/"
+        ImageDirWin = "images\\"
+        ImageWinPath = ".\images\chess.png"
+        inChessDir = True
+    elif(fnmatch.fnmatch(os.getcwd(), ("*" + compliantSlash + "Chess"))):
+        ImageLinuxPath = "./images/chess.png"
+        ImageDirLinux = "./images/"
+        ImageDirWin = "images\\"
+        ImageWinPath = ".\images\chess.png"
+        inChessDir = True
+    else:
+        ImageWinPath = ".\Chess\images\chess.png"
+        ImageLinuxPath = "./Chess/images/chess.png"
+        ImageDirWin = ".\Chess\images\\"
+        ImageDirLinux = "./Chess/images/"
+        inChessDir = False
+if(_os == "win32"):
     p.display.set_icon(p.image.load(ImageWinPath))
-elif(os == "cygwin"):
+elif(_os == "cygwin"):
     p.display.set_icon(p.image.load(ImageLinuxPath))
 else:
     p.display.set_icon(p.image.load(ImageLinuxPath))
@@ -32,6 +58,7 @@ DIMENSION = 8  # dimensions of a chess board are 8x8
 SQ_SIZE = HEIGHT // DIMENSION
 MAX_FPS = 15  # For animation later on
 IMAGES = {}
+DEBUG_MODE = True
 
 # Loading the images and will initialize a global dictionary of images.
 
@@ -50,6 +77,7 @@ def load_images():
 # This will handle the user input and update the graphics
 
 def main():
+    DebuggerWindow.createDebuggerWindow(DEBUG_MODE, inChessDir)
     p.init()
     screen = p.display.set_mode((WIDTH, HEIGHT))
     clock = p.time.Clock()
