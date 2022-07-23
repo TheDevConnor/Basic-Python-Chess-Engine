@@ -1,6 +1,7 @@
 # Handles the user input and game state information
 
 import pygame as p
+from pygame import mixer
 import ChessEngine, ChessAi
 import sys, os
 import DebuggerWindow
@@ -8,6 +9,7 @@ import fnmatch
 
 # Changes the title of the window and the programs image
 p.display.set_caption('Chess')
+mixer.init()
 
 global inChessDir
 inChessDir = None
@@ -17,7 +19,13 @@ ImageWinPath = ".\Chess\images\chess.png"
 ImageLinuxPath = "./Chess/images/chess.png"
 ImageDirWin = ".\Chess\images\\"
 ImageDirLinux = "./Chess/images/"
+<<<<<<< HEAD
 _os=sys.platform
+=======
+
+MusicWinPath = ".\Chess\Chess_Music.mp3"
+MusicLinuxPath = "./Chess/Chess_Music.mp3"
+>>>>>>> 37d54e7da8948ca74177c5e9db6e8b98fb783607
 #check if the game is being ran inside the Chess folder, so its compatible either way
 pattern = "*"
 if(os.getcwd().endswith("Chess")):
@@ -48,10 +56,17 @@ if(os.getcwd().endswith("Chess")):
         inChessDir = False
 if(_os == "win32"):
     p.display.set_icon(p.image.load(ImageWinPath))
+<<<<<<< HEAD
 elif(_os == "cygwin"):
+=======
+    mixer.music.load(MusicWinPath)
+elif(os == "cygwin"):
+>>>>>>> 37d54e7da8948ca74177c5e9db6e8b98fb783607
     p.display.set_icon(p.image.load(ImageLinuxPath))
+    mixer.music.load(MusicWinPath)
 else:
     p.display.set_icon(p.image.load(ImageLinuxPath))
+    mixer.music.load(MusicLinuxPath)
 
 WIDTH = HEIGHT = 500  # 500 is the best size for the window do to the size and reselution of the pieces
 DIMENSION = 8  # dimensions of a chess board are 8x8
@@ -59,6 +74,9 @@ SQ_SIZE = HEIGHT // DIMENSION
 MAX_FPS = 15  # For animation later on
 IMAGES = {}
 DEBUG_MODE = True
+
+# Play Music
+#mixer.music.play()
 
 # Loading the images and will initialize a global dictionary of images.
 
@@ -84,7 +102,7 @@ def main():
     screen.fill(p.Color("black"))
     gs = ChessEngine.GameState()
 
-    valid_Moves = gs.valid_Moves()
+    valid_moves = gs.valid_moves()
     moveMade = False # The flag varuable for when the game state is changed or move is made
 
     animate = False # Falg variable for when we should animate a move
@@ -98,7 +116,7 @@ def main():
     gameOver = False
 
     playerOne = True # IF a person is playing white then the varuable will be true while if ai plays then false
-    playerTwo = False # Same as a bove just for black
+    playerTwo = True # Same as a bove just for black
 
     while running:
         #Check to see if a human is playing
@@ -127,9 +145,9 @@ def main():
                         move = ChessEngine.Move(playerClicks[0], playerClicks[1], gs.board)
                         print(move.getChessNotation())
 
-                        for i in range(len(valid_Moves)):
-                            if move == valid_Moves[i]:
-                                gs.make_move(valid_Moves[i])
+                        for i in range(len(valid_moves)):
+                            if move == valid_moves[i]:
+                                gs.make_move(valid_moves[i])
                                 moveMade = True
                                 animate = True
                                 sqSelected = () # Reset the user clicks
@@ -146,15 +164,15 @@ def main():
 
                 if e.key == p.K_r: # Reset the board when 'r' is pressed
                     gs = ChessEngine.GameState()
-                    valid_Moves = gs.valid_Moves()
+                    valid_moves = gs.valid_moves()
                     sqSelected = ()
                     playerClicks = []
-                    moveMade = False
+                    moveMade = True
                     animate = False
 
         # The Ai move finder object
         if not gameOver and not isHumanTurn:
-            AIMove = ChessAi.FindRandomMoce(valid_Moves)
+            AIMove = ChessAi.FindRandomMoce(valid_moves)
             gs.make_move(AIMove)
             moveMade = True
             animate = True
@@ -162,11 +180,11 @@ def main():
         if moveMade:
             if animate:
                 animateMove(gs.moveLog[-1], screen, gs.board, clock)
-            valid_Moves = gs.valid_Moves()
+            valid_moves = gs.valid_moves()
             moveMade = False
             animate = False
 
-        drawGameState(screen, gs, valid_Moves, sqSelected)
+        drawGameState(screen, gs, valid_moves, sqSelected)
 
         if gs.checkmate:
             gameOver = True

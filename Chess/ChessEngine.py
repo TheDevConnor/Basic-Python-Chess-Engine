@@ -2,9 +2,6 @@
 # as determine the valid moves as well
 # keeping take of the move logs
 
-from distutils.dep_util import newer_pairwise
-
-
 class GameState():
     def __init__(self):
         # Board is a 8x8 two dimensional plane
@@ -44,6 +41,9 @@ class GameState():
 
 
     def make_move(self, move):
+        if self.get_cell(move.endRow, move.endCol) is None:
+            return False
+
         self.board[move.startRow][move.startCol] = "--"
         self.board[move.endRow][move.endCol] = move.pieceMoved
         self.moveLog.append(move) # log the move in order to undo it
@@ -57,8 +57,8 @@ class GameState():
 
         # Pawn Promotion
         if move.isPawnPromotion:
-            promotedPiece = input("Promote to Q, R, B, or N:")
-            self.board[move.endRow][move.endCol] = move.pieceMoved[0] + promotedPiece
+            #promotedPiece = input("Promote to Q, R, B, or N:")
+            self.board[move.endRow][move.endCol] = move.pieceMoved[0] + 'Q'
 
         # Enpassant
         if move.isEnpassantMove:
@@ -82,6 +82,8 @@ class GameState():
         self.update_castle_rights(move)
         self.castleRightsLog.append(CastleRights(self.currentCastlingRight.wks, self.currentCastlingRight.bks,
                                                  self.currentCastlingRight.wqs, self.currentCastlingRight.bqs))
+
+        return True
 
 
     def undo_move(self):
@@ -145,12 +147,12 @@ class GameState():
                     self.currentCastlingRight.bks = False
 
 
-    def valid_Moves(self):
+    def valid_moves(self):
         tempEnpasantPossible = self.enpassantPossible
         # Copy the current castling rights
         tempCastleRights = CastleRights(self.currentCastlingRight.wks, self.currentCastlingRight.bks,
                                         self.currentCastlingRight.wqs, self.currentCastlingRight.bqs)
-        moves = self.get_All_Possible_Moves()
+        moves = self.get_all_possible_moves()
         
         if self.whiteToMove:
             self.get_castle_moves(self.white_king_to_move[0], self.white_king_to_move[1], moves)
@@ -162,13 +164,13 @@ class GameState():
 
             #Generate all oppent's moves
             self.whiteToMove = not self.whiteToMove
-            if self.in_Check():
+            if self.in_check():
                 moves.remove(moves[i])
             self.whiteToMove = not self.whiteToMove
             self.undo_move()
 
         if len(moves) == 0:
-            if self.in_Check():
+            if self.in_check():
                 self.checkmate = True
             else:
                 self.stalemate = True
@@ -181,7 +183,7 @@ class GameState():
         return moves
 
     
-    def in_Check(self):
+    def in_check(self):
         if self.whiteToMove:
             return self.square_under_attack(self.white_king_to_move[0], self.white_king_to_move[1])
         else:
@@ -191,7 +193,7 @@ class GameState():
 
     def square_under_attack(self, r, c):
         self.whiteToMove = not self.whiteToMove # switch the opponent's turn
-        oppsMoves = self.get_All_Possible_Moves()
+        oppsMoves = self.get_all_possible_moves()
         self.whiteToMove = not self.whiteToMove # switch turns back
 
         for move in oppsMoves:
@@ -200,7 +202,7 @@ class GameState():
         return False 
 
 
-    def get_All_Possible_Moves(self):
+    def get_all_possible_moves(self):
         moves = []
         for r in range(len(self.board)):
             for c in range(len(self.board[r])):
@@ -350,16 +352,22 @@ class GameState():
 
     
     def get_king_side_castle(self, r, c, moves):
-        if self.board[r][c+1] == '--' and self.board[r][c+2] == '--':
+        if self.get_cell(r, c+1) == '--' and self.get_cell(r, c+2) == '--':
             if not self.square_under_attack(r, c+1) and not self.square_under_attack(r, c+2):
                 moves.append(Move((r, c), (r, c+2), self.board, castle=True))
 
 
     def get_queen_side_castle(self, r, c, moves):
-        if self.board[r][c-1] == '--' and self.board[r][c-2] == '--' and self.board[r][c-3]:
+        if self.get_cell(r, c-1) == '--' and self.get_cell(r, c-2) == '--' and self.get_cell(r, c-3):
             if not self.square_under_attack(r, c-1) and not self.square_under_attack(r, c-2):
                 moves.append(Move((r, c), (r, c-2), self.board, castle=True))
 
+    
+    def get_cell(self, r, c):
+        if r < 0 or r >= 8 or c < 0 or c >= 8:
+            return None
+
+        return self.board[r][c]
 
 class CastleRights():
     def __init__(self, wks, bks, wqs, bqs):
