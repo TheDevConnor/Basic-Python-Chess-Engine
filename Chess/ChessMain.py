@@ -42,7 +42,7 @@ MAX_FPS = 15  # For animation later on
 IMAGES = {}
 
 # Play Music
-#mixer.music.play()
+mixer.music.play()
 
 # Loading the images and will initialize a global dictionary of images.
 
@@ -81,7 +81,7 @@ def main():
     gameOver = False
 
     playerOne = True # IF a person is playing white then the varuable will be true while if ai plays then false
-    playerTwo = True # Same as a bove just for black
+    playerTwo = False # Same as a bove just for black
 
     while running:
         #Check to see if a human is playing
@@ -137,7 +137,9 @@ def main():
 
         # The Ai move finder object
         if not gameOver and not isHumanTurn:
-            AIMove = ChessAi.FindRandomMoce(valid_moves)
+            AIMove = ChessAi.find_best_move(gs, valid_moves)
+            if AIMove is None:
+                AIMove = ChessAi.find_random_move(valid_moves)
             gs.make_move(AIMove)
             moveMade = True
             animate = True
