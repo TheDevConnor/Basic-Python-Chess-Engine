@@ -67,7 +67,7 @@ def main():
     screen.fill(p.Color("black"))
     gs = ChessEngine.GameState()
 
-    valid_Moves = gs.valid_Moves()
+    valid_moves = gs.valid_moves()
     moveMade = False # The flag varuable for when the game state is changed or move is made
 
     animate = False # Falg variable for when we should animate a move
@@ -110,9 +110,9 @@ def main():
                         move = ChessEngine.Move(playerClicks[0], playerClicks[1], gs.board)
                         print(move.getChessNotation())
 
-                        for i in range(len(valid_Moves)):
-                            if move == valid_Moves[i]:
-                                gs.make_move(valid_Moves[i])
+                        for i in range(len(valid_moves)):
+                            if move == valid_moves[i]:
+                                gs.make_move(valid_moves[i])
                                 moveMade = True
                                 animate = True
                                 sqSelected = () # Reset the user clicks
@@ -129,15 +129,15 @@ def main():
 
                 if e.key == p.K_r: # Reset the board when 'r' is pressed
                     gs = ChessEngine.GameState()
-                    valid_Moves = gs.valid_Moves()
+                    valid_moves = gs.valid_moves()
                     sqSelected = ()
                     playerClicks = []
-                    moveMade = False
+                    moveMade = True
                     animate = False
 
         # The Ai move finder object
         if not gameOver and not isHumanTurn:
-            AIMove = ChessAi.FindRandomMoce(valid_Moves)
+            AIMove = ChessAi.FindRandomMoce(valid_moves)
             gs.make_move(AIMove)
             moveMade = True
             animate = True
@@ -145,11 +145,11 @@ def main():
         if moveMade:
             if animate:
                 animateMove(gs.moveLog[-1], screen, gs.board, clock)
-            valid_Moves = gs.valid_Moves()
+            valid_moves = gs.valid_moves()
             moveMade = False
             animate = False
 
-        drawGameState(screen, gs, valid_Moves, sqSelected)
+        drawGameState(screen, gs, valid_moves, sqSelected)
 
         if gs.checkmate:
             gameOver = True
