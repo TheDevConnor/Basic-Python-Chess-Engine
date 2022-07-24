@@ -147,7 +147,6 @@ def main():
                     animate = False
 
         # The Ai move finder object
-        '''
         if not gameOver and not isHumanTurn:
             AIMove = ChessAi.find_random_move(valid_moves)
             gs.make_move(AIMove)
@@ -160,7 +159,6 @@ def main():
             valid_moves = gs.valid_moves()
             moveMade = True
             animate = False
-        '''
 
         drawGameState(screen, gs, valid_moves, sqSelected, moveLogFont)
 
