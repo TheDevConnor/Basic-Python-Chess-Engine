@@ -23,6 +23,36 @@ ImageDirLinux = "./Chess/images/"
 MusicWinPath = ".\Chess\Music\sweet_zaza.mp3"
 MusicLinuxPath = "./Chess/Music/sweet_zaza.mp3"
 #check if the game is being ran inside the Chess folder, so its compatible either way
+<<<<<<< HEAD
+pattern = "*"
+if(os.getcwd().endswith("Chess")):
+    compliantSlash:str = None
+    if(_os == "win32"):
+        compliantSlash = "\\"
+    elif(_os == "cygwin"):
+        compliantSlash = "\\"
+    else:
+        compliantSlash = "/"
+    if(fnmatch.fnmatch(os.getcwd(), ("*" + compliantSlash + "Chess" + compliantSlash + "Chess"))):
+        ImageLinuxPath = "./images/chess.png"
+        ImageDirLinux = "./images/"
+        ImageDirWin = ".\images\\"
+        ImageWinPath = ".\images\chess.png"
+        inChessDir = True
+    elif(fnmatch.fnmatch(os.getcwd(), ("*" + compliantSlash + "Chess"))):
+        ImageLinuxPath = "./Chess/images/chess.png"
+        ImageDirLinux = "./Chess/images/"
+        ImageDirWin = ".\Chess\images\\"
+        ImageWinPath = ".\Chess\images\chess.png"
+        inChessDir = True
+    else:
+        ImageWinPath = ".\Chess\images\chess.png"
+        ImageLinuxPath = "./Chess/images/chess.png"
+        ImageDirWin = ".\Chess\images\\"
+        ImageDirLinux = "./Chess/images/"
+        inChessDir = False
+if(_os == "win32"):
+=======
 if(os.getcwd().endswith("Chess") and os.getcwd().endswith("Chess/Chess") or os.getcwd().endswith("Chess\Chess")):
     ImageWinPath = ".\images\chess.png"
     ImageLinuxPath = "./images/chess.png"
@@ -31,6 +61,7 @@ if(os.getcwd().endswith("Chess") and os.getcwd().endswith("Chess/Chess") or os.g
 
 os=sys.platform
 if(os == "win32"):
+>>>>>>> 09aa31d5bf83d426f9a49aa497e91f1b8cddc026
     p.display.set_icon(p.image.load(ImageWinPath))
     mixer.music.load(MusicWinPath)
 elif(os == "cygwin"):
@@ -57,9 +88,9 @@ mixer.music.play(-1)
 def load_images():
     pieces = ["--","wp", "wN", "wB", "wR", "wQ", "wK", "bp", "bN", "bB", "bR", "bQ", "bK"]
     for piece in pieces:
-        if(os == "win32"):
+        if(_os == "win32"):
             IMAGES[piece] = p.transform.scale(p.image.load(ImageDirWin + piece + ".png"), (SQ_SIZE, SQ_SIZE))
-        elif(os == "cygwin"):
+        elif(_os == "cygwin"):
             IMAGES[piece] = p.transform.scale(p.image.load(ImageDirWin + piece + ".png"), (SQ_SIZE, SQ_SIZE))
         else:
             IMAGES[piece] = p.transform.scale(p.image.load(ImageDirLinux + piece + ".png"), (SQ_SIZE, SQ_SIZE))
