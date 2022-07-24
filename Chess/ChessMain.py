@@ -5,7 +5,6 @@ from pygame import mixer
 import ChessEngine, ChessAi
 import sys, os
 import DebuggerWindow
-import fnmatch
 
 # Changes the title of the window and the programs image
 p.display.set_caption('Chess')
@@ -50,7 +49,7 @@ IMAGES = {}
 DEBUG_MODE = True
 
 # Play Music
-mixer.music.play(-1)
+#mixer.music.play(-1)
 
 # Loading the images and will initialize a global dictionary of images.
 
