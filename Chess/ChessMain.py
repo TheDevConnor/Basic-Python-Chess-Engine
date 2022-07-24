@@ -20,8 +20,8 @@ ImageLinuxPath = "./Chess/images/chess.png"
 ImageDirWin = ".\Chess\images\\"
 ImageDirLinux = "./Chess/images/"
 
-MusicWinPath = ".\Chess\Chess_Music.mp3"
-MusicLinuxPath = "./Chess/Chess_Music.mp3"
+MusicWinPath = ".\Chess\Music\sweet_zaza.mp3"
+MusicLinuxPath = "./Chess/Music/sweet_zaza.mp3"
 #check if the game is being ran inside the Chess folder, so its compatible either way
 if(os.getcwd().endswith("Chess") and os.getcwd().endswith("Chess/Chess") or os.getcwd().endswith("Chess\Chess")):
     ImageWinPath = ".\images\chess.png"
@@ -50,7 +50,7 @@ IMAGES = {}
 DEBUG_MODE = True
 
 # Play Music
-#mixer.music.play()
+mixer.music.play(-1)
 
 # Loading the images and will initialize a global dictionary of images.
 
@@ -81,7 +81,7 @@ def main():
 
     animate = False # Falg variable for when we should animate a move
 
-    moveLogFont = p.font.SysFont("Poppin", 32, False, False)
+    moveLogFont = p.font.SysFont("Poppin", 30, False, False)
 
     load_images() # Only do this once, before the while loop.
     running = True
@@ -143,14 +143,13 @@ def main():
                     valid_moves = gs.valid_moves()
                     sqSelected = ()
                     playerClicks = []
-                    moveMade = True
+                    moveMade = False
                     animate = False
 
         # The Ai move finder object
+        '''
         if not gameOver and not isHumanTurn:
-            AIMove = ChessAi.find_best_move(gs, valid_moves)
-            if AIMove is None:
-                AIMove = ChessAi.find_random_move(valid_moves)
+            AIMove = ChessAi.find_random_move(valid_moves)
             gs.make_move(AIMove)
             moveMade = True
             animate = True
@@ -159,8 +158,9 @@ def main():
             if animate:
                 animateMove(gs.moveLog[-1], screen, gs.board, clock)
             valid_moves = gs.valid_moves()
-            moveMade = False
+            moveMade = True
             animate = False
+        '''
 
         drawGameState(screen, gs, valid_moves, sqSelected, moveLogFont)
 
@@ -259,13 +259,24 @@ def draw_move_log(screen, gs, font):
     p.draw.rect(screen, p.Color("black"), move_log_rect)
 
     move_log = gs.moveLog
-    move_texts = move_log
+    move_texts = []
+
+    for i in range(0, len(move_log), 2):
+        move_string = str(i//2 + 1) + ". " + str(move_log[i]) + " "
+        if i+1 < len(move_log):
+            move_string += str(move_log[i+1]) + " "
+        move_texts.append(move_string)
+
+    moves_per_row = 1
     padding = 5
     line_spacing = 10
     text_y = padding
 
-    for i in range(len(move_texts)):
-        text = move_texts[i].getChessNotation()
+    for i in range(0, len(move_texts), moves_per_row):
+        text = " "
+        for j in range(moves_per_row):
+            if i + j < len(move_texts):
+                text += move_texts[i + j]
         textObj = font.render(text, True, p.Color('white'))
         textLoc = move_log_rect.move(padding, text_y)
         screen.blit(textObj, textLoc)
