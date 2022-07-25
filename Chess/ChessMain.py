@@ -99,7 +99,7 @@ def main():
     gameOver = False
 
     playerOne = True# IF a person is playing white then the varuable will be true while if ai plays then false
-    playerTwo = True # Same as a bove just for black
+    playerTwo = False # Same as a bove just for black
 
     while running:
         #Check to see if a human is playing
