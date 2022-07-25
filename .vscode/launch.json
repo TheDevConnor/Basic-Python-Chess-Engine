@@ -8,9 +8,9 @@
             "name": "Python: Current File",
             "type": "python",
             "request": "launch",
-            "program": "${pwd}/ChessMain.py",
+            "program": "${pwd}",
             "console": "integratedTerminal",
-            "cwd": "${pwd}/../",
+            "cwd": "${pwd}",
             "justMyCode": true
         }
     ]

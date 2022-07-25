@@ -47,8 +47,14 @@ def find_best_move(gs, validMoves):
         gs.undo_move()
     return best_move
 
-def find_min_max(gs, validMoves, depth):
-    pass
+def find_best_move_min_max(gs, validMoves):
+    global next_move
+
+
+    return next_move
+
+def find_min_max(gs, validMoves, depth, whiteToMove):
+    global next_move
 
 def board_material(board):
     score = 0
