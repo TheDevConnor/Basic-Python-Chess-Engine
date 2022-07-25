@@ -98,7 +98,7 @@ def main():
 
     gameOver = False
 
-    playerOne = False # IF a person is playing white then the varuable will be true while if ai plays then false
+    playerOne = True# IF a person is playing white then the varuable will be true while if ai plays then false
     playerTwo = True # Same as a bove just for black
 
     while running:
@@ -126,7 +126,7 @@ def main():
                     
                     if len(playerClicks) == 2: # After the secound click
                         move = ChessEngine.Move(playerClicks[0], playerClicks[1], gs.board)
-                        print(move.getChessNotation())
+                        #print(move.getChessNotation())
 
                         for i in range(len(valid_moves)):
                             if move == valid_moves[i]:
@@ -145,14 +145,16 @@ def main():
                     gs.undo_move()
                     moveMade = True
                     animate = False
+                    gameOver = False
 
                 if e.key == p.K_r: # Reset the board when 'r' is pressed
                     gs = ChessEngine.GameState()
                     valid_moves = gs.valid_moves()
                     sqSelected = ()
                     playerClicks = []
-                    moveMade = True
+                    moveMade = False
                     animate = False
+                    gameOver = False
 
         # The Ai move finder object
         if not gameOver and not isHumanTurn:
