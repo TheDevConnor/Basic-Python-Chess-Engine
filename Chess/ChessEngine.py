@@ -435,13 +435,6 @@ class Move():
             return "O-O" if self.endCol == 6 else "O-O-O"
         end_square = self.getRankFile(self.endRow, self.endCol)
 
-        #Pawn Moves
-        if self.pieceMoved[1] == 'p':
-            if self.isCapture:
-                return self.colsToFiles[self.startCol] + "x" + end_square
-            else:
-                return end_square
-
         # Piece Moves
         move_string = self.pieceMoved[1]
         if self.isCapture:

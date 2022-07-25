@@ -21,6 +21,11 @@ ImageDirLinux = "./Chess/images/"
 
 MusicWinPath = ".\Chess\Music\sweet_zaza.mp3"
 MusicLinuxPath = "./Chess/Music/sweet_zaza.mp3"
+
+PieceMovedPath = "./Chess/Music/PieceMoved.mp3"
+
+InCheckPath = "./Chess/Music/inCheck.mp3"
+
 #check if the game is being ran inside the Chess folder, so its compatible either way
 if(os.getcwd().endswith("Chess") and os.getcwd().endswith("Chess/Chess") or os.getcwd().endswith("Chess\Chess")):
     ImageWinPath = ".\images\chess.png"
@@ -49,7 +54,10 @@ IMAGES = {}
 DEBUG_MODE = True
 
 # Play Music
-#mixer.music.play(-1)
+mixer.music.play(-1)
+# Set Music volume and Sound effect volume
+mixer.music.set_volume(0.09)
+
 
 # Loading the images and will initialize a global dictionary of images.
 
@@ -80,7 +88,7 @@ def main():
 
     animate = False # Falg variable for when we should animate a move
 
-    moveLogFont = p.font.SysFont("Poppin", 30, False, False)
+    moveLogFont = p.font.SysFont("Poppin", 20, False, False)
 
     load_images() # Only do this once, before the while loop.
     running = True
@@ -90,7 +98,7 @@ def main():
 
     gameOver = False
 
-    playerOne = True # IF a person is playing white then the varuable will be true while if ai plays then false
+    playerOne = False # IF a person is playing white then the varuable will be true while if ai plays then false
     playerTwo = True # Same as a bove just for black
 
     while running:
@@ -125,6 +133,7 @@ def main():
                                 gs.make_move(valid_moves[i])
                                 moveMade = True
                                 animate = True
+                                mixer.Sound(PieceMovedPath).play()
                                 sqSelected = () # Reset the user clicks
                                 playerClicks = []
                         if not moveMade:
@@ -142,12 +151,14 @@ def main():
                     valid_moves = gs.valid_moves()
                     sqSelected = ()
                     playerClicks = []
-                    moveMade = False
+                    moveMade = True
                     animate = False
 
         # The Ai move finder object
         if not gameOver and not isHumanTurn:
-            AIMove = ChessAi.find_random_move(valid_moves)
+            AIMove = ChessAi.find_best_move(gs, valid_moves)
+            if AIMove is None:
+                AIMove = ChessAi.find_random_move(valid_moves)
             gs.make_move(AIMove)
             moveMade = True
             animate = True
@@ -160,6 +171,11 @@ def main():
             animate = False
 
         drawGameState(screen, gs, valid_moves, sqSelected, moveLogFont)
+
+        '''
+        if gs.in_check():
+            mixer.Sound(InCheckPath).play()
+        '''
 
         if gs.checkmate:
             gameOver = True
@@ -227,7 +243,7 @@ def animateMove(move, screen, board, clock):
     coords = [] # List of the cords that the animation will move through
     dR = move.endRow - move.startRow
     dC = move.endCol - move.startCol
-    fPS = 5 # Frames to move one square
+    fPS = 2 # Frames to move one square
     frameCount = (abs(dR) + abs(dC)) * fPS
 
     for frame in range(frameCount + 1):
@@ -264,7 +280,7 @@ def draw_move_log(screen, gs, font):
             move_string += str(move_log[i+1]) + " "
         move_texts.append(move_string)
 
-    moves_per_row = 1
+    moves_per_row = 2
     padding = 5
     line_spacing = 10
     text_y = padding
