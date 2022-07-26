@@ -1,13 +1,12 @@
 import socket
 import threading
 import time
-
-
+import sys, os
 
 class server:
-    def __init__(self) -> None:
+    def __init__(self):
         _port = 5000
-        _header = 1024
+        _header = 512
         # Automatically gets the IP address of the computer
         _server = socket.gethostbyname(socket.gethostname())
         _address = (_server, _port)
@@ -16,6 +15,7 @@ class server:
         _client_dict = {
             "": ""
         }
+        _clients = []
 
         # There server socket
         _server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -25,26 +25,37 @@ class server:
             print(f"Client connected from {_address}")
 
             connected=True
+
             while connected:
+                if(conn == None):
+                    connected = False
+                    pass
+                #_client_dict[conn] = addr
+                _clients.append(conn)
                 data = conn.recv(_header).decode(_format)
                 if data:
                     conn.sendall(f"ServerKeepAlive,Time:{time.localtime}".encode())
                     msg_len = len(data)
-                    msg = conn.recv(msg_len).decode(_format)
                     print(f"{_address} sent packet {data}")
-                    if msg == "quit":
-                        connected = False
-                        print(f"Client disconnected from {addr}")
                     print(f"Received {msg_len} bytes from {addr}")
                     splitmsg = data.split(",")
-                    splitmsg[1]
+                    #if(splitmsg[0] == conn):
+                    #    break
                     print(conn.getpeername()[0])
                     _client_dict[str(conn.getpeername()[0])] = str(splitmsg[0])
                     print(_client_dict[str(conn.getpeername()[0])])
                     print(f"{str(conn.getpeername()[0])} declared target {splitmsg[0]}")
+                    for client in _clients:
+                        if(client == splitmsg[0]):
+                            client.sendall(splitmsg[1])
+                            print(f"{splitmsg[0], client, splitmsg[1]}")
+                            connected = False
+                            return
+                        return
                 else:
                     conn.sendall(f"ServerKeepAlive,Time:{time.localtime}".encode())
-                    
+            _clients.pop(conn.fileno())
+            print(f"{conn.fileno()} disconnected")
             conn.close()
 
         def start_server():
@@ -58,4 +69,3 @@ class server:
         print("Starting server...")
         start_server()
 server()
-

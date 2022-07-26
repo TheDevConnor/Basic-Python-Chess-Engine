@@ -1,6 +1,7 @@
 # Handles the user input and game state information
 import subprocess
 import multiprocessing as mp
+import ChessClient
 global mainThread
     
 def init():
@@ -66,7 +67,7 @@ def init():
 
 
     # Play Music
-    #mixer.music.play(-1)
+    mixer.music.play(-1)
     # Set Music volume and Sound effect volume
     mixer.music.set_volume(0.09)
 
@@ -115,7 +116,6 @@ def init():
         multiplayer = True # If the game is multiplayer or not
 
         while running:
-            ChessClient.ChessClient().receive_message(_established)
             #Check to see if a human is playing
             isHumanTurn = (gs.whiteToMove and playerOne) or (not gs.whiteToMove and playerTwo)
 
@@ -154,7 +154,7 @@ def init():
                                     else:
                                         gs.make_move(valid_moves[i])
                                         try:
-                                            _established = ChessClient.ChessClient().send_message(("10.0.0.101," + move.getChessNotation()), _established)
+                                            ChessClient.message(("10.0.0.101," + move.getChessNotation()))
                                         except Exception as e:
                                             print(e)
                                         moveMade = True 
@@ -335,16 +335,20 @@ def init():
     main()
 
 if __name__ == "__main__":
-    mainThread = mp.Process(target=init(), args=())
-    #srv = mp.Process(target=ChessServer.server(), args=())
-    #srv.start()
-    
+    processes = []
+    num_processes = 1
 
-    mainThread.start()
-    mainThread.join()
+    for i in range(num_processes):
+        mainThread = mp.Process(target=init(), args=())
+        p1 = mp.Process(target=ChessClient.message, args=("NAN"))
+        processes.append(mainThread)
+        processes.append(p1)
+
+    for process in processes:
+        process.start()
+    
+    for process in processes:
+        process.join()
+
 
     print("\nok\n")
-
-    # For Threading
-    #srv = threading.Thread(target=ChessServer.server(), args=())
-    #mainThread = threading.Thread(target=Chess())
