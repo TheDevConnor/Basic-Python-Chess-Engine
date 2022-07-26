@@ -26,3 +26,4 @@ def message(message):
         else:
             _client_socket.sendall(message.encode())
             break
+    return data

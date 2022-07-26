@@ -154,7 +154,8 @@ def init():
                                     else:
                                         gs.make_move(valid_moves[i])
                                         try:
-                                            ChessClient.message(("10.0.0.101," + move.getChessNotation()))
+                                            serverMove = ChessClient.message(("10.0.0.101," + move.getChessNotation()))
+                                            gs.make_move(serverMove)
                                         except Exception as e:
                                             print(e)
                                         moveMade = True 
