@@ -46,7 +46,8 @@ class server:
                     print(_client_dict[str(conn.getpeername()[0])])
                     print(f"{str(conn.getpeername()[0])} declared target {splitmsg[0]}")
                     for client in _clients:
-                        if(client == splitmsg[0]):
+                        print(str(client))
+                        if(str(client).find(splitmsg[0] >= 0)):
                             client.sendall(splitmsg[1])
                             print(f"{splitmsg[0], client, splitmsg[1]}")
                             connected = False
