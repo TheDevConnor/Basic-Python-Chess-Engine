@@ -14,7 +14,9 @@ https://www.youtube.com/watch?v=c_qNC1lL4qA
 
 ---------------------------------------------------
 
-In order to run the program you must launch it from the ChessMain.py file
+###Running
+
+The run.py file is setup to run the Chess Engine
 
 ---------------------------------------------------
 
