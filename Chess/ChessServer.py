@@ -29,14 +29,13 @@ class server:
                 if data:
                     msg_len = len(data)
                     msg = conn.recv(msg_len).decode(_format)
-                    print(f"{_address} > {msg}")
+                    print(f"{_address} sent packet {data}")
                     if msg == "quit":
                         connected = False
                         print(f"Client disconnected from {addr}")
                     print(f"Received {msg_len} bytes from {addr}")
-                    splitmsg = msg.split(",")
-                    for i in splitmsg:
-                        print(i)
+                    splitmsg = data.split(",")
+                    splitmsg[1]
                     print(conn.getpeername()[0])
                     _client_dict[str(conn.getpeername()[0])] = str(splitmsg[0])
                     print(_client_dict[str(conn.getpeername()[0])])
@@ -55,3 +54,4 @@ class server:
         print("Starting server...")
         start_server()
 server()
+

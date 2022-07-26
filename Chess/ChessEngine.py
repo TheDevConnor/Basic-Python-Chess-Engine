@@ -72,11 +72,17 @@ class GameState():
         # Castle Move
         if move.castle:
             if move.endCol - move.startCol == 2: # Kings side castle
-                self.board[move.endRow][move.endCol-1] = self.board[move.endRow][move.endCol+1] # Moves the rook
-                self.board[move.endRow][move.endCol+1] = '--' # Erase the old rook
+                self.set_cell(move.endRow, move.endCol - 1, self.get_cell(move.endRow, move.endCol + 1))
+                self.set_cell(move.endRow, move.endCol+1, '--')
+
+                #self.board[move.endRow][move.endCol-1] = self.board[move.endRow][move.endCol+1] # Moves the rook
+                #self.board[move.endRow][move.endCol+1] = '--' # Erase the old rook
             else: # Queen side castle
-                self.board[move.endRow][move.endCol+1] = self.board[move.endRow][move.endCol-2] # Moves the rook
-                self.board[move.endRow][move.endCol-2] = '--' # Erase the old rook
+                self.set_cell(move.endRow, move.endCol + 1, self.get_cell(move.endRow, move.endCol - 2))
+                self.set_cell(move.endRow, move.endCol - 2, '--')
+
+                #self.board[move.endRow][move.endCol+1] = self.board[move.endRow][move.endCol-2] # Moves the rook
+                #self.board[move.endRow][move.endCol-2] = '--' # Erase the old rook
 
         # Update Castling Rights
         self.update_castle_rights(move)
@@ -89,8 +95,10 @@ class GameState():
     def undo_move(self):
         if len(self.moveLog) != 0: # Make sure there is a move to undo
             move = self.moveLog.pop()
-            self.board[move.startRow][move.startCol] = move.pieceMoved
-            self.board[move.endRow][move.endCol] = move.pieceCaptured
+            self.set_cell(move.startRow, move.startCol, move.pieceMoved)
+            self.set_cell(move.endRow, move.endCol, move.pieceCaptured)
+            #self.board[move.startRow][move.startCol] = move.pieceMoved
+            #self.board[move.endRow][move.endCol] = move.pieceCaptured
             self.whiteToMove = not self.whiteToMove # Swap the players
 
 
@@ -101,7 +109,7 @@ class GameState():
             self.black_king_to_move = (move.startRow, move.startCol)
 
         #Undo enpassant
-        if move.isEnpassantMove:
+        if move.isEnpassantMove: 
             self.board[move.endRow][move.endCol] = '--'
             self.board[move.startRow][move.endCol] = move.pieceCaptured
             self.enpassantPossible = (move.endRow, move.endCol)
@@ -117,11 +125,15 @@ class GameState():
         # Undo the castle move
         if move.castle:
             if move.endCol - move.startCol == 2: # Kings side castle
-                self.board[move.endRow][move.endCol+1] = self.board[move.endRow][move.endCol-1] # Moves the rook
-                self.board[move.endRow][move.endCol-1] = '--' # Erase the old rook
+                self.get_cell(move.endRow, move.endCol + 1, self.get_cell(move.endRow, move.endCol - 1))
+                self.get_cell(move.endRow, move.endCol - 1, '--')
+                #self.board[move.endRow][move.endCol+1] = self.board[move.endRow][move.endCol-1] # Moves the rook
+                #self.board[move.endRow][move.endCol-1] = '--' # Erase the old rook
             else: # Queen side castle
-                self.board[move.endRow][move.endCol-2] = self.board[move.endRow][move.endCol+1] # Moves the rook
-                self.board[move.endRow][move.endCol+1] = '--' # Erase the old rook
+                self.get_cell(move.endRow, move.endCol - 2, self.get_cell(move.endRow, move.endCol + 1))
+                self.get_cell(move.endRow, move.endCol + 1, '--')
+                #self.board[move.endRow][move.endCol-2] = self.board[move.endRow][move.endCol+1] # Moves the rook
+                #self.board[move.endRow][move.endCol+1] = '--' # Erase the old rook
 
         # Undo checkmate and stalemate
         self.checkmate = False
@@ -372,6 +384,12 @@ class GameState():
             return None
 
         return self.board[r][c]
+
+    def set_cell(self, r, c, piece):
+        if r < 0 or r >= 8 or c < 0 or c >= 8:
+            raise Exception("Can't set cell")
+
+        self.board[r][c] = piece
 
 class CastleRights():
     def __init__(self, wks, bks, wqs, bqs):

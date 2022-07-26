@@ -1,7 +1,7 @@
 # Handles the user input and game state information
-import multiprocessing as mp
 import subprocess
 import ChessClient
+import multiprocessing as mp
 global mainThread
     
 def init():
@@ -108,7 +108,7 @@ def init():
 
         gameOver = False
 
-        playerOne = True# IF a person is playing white then the varuable will be true while if ai plays then false
+        playerOne = True # IF a person is playing white then the varuable will be true while if ai plays then false
         playerTwo = True # Same as a bove just for black
         multiplayer = True # If the game is multiplayer or not
 
@@ -151,7 +151,7 @@ def init():
                                     else:
                                         gs.make_move(valid_moves[i])
                                         try:
-                                            ChessClient.send_message(("127.0.0.1," + move.getChessNotation()))
+                                            ChessClient.send_message(("35.223.181.160," + move.getChessNotation()))
                                         except Exception as e:
                                             print(e)
                                         moveMade = True 

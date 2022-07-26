@@ -4,7 +4,7 @@ global _client_socket
 
 _disconnect = "quit"
 _port = 5000
-_server = "10.0.0.101"
+_server = "35.223.181.160"
 _address = (_server, _port)
 uinput = ["", "", "", ""]
 

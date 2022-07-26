@@ -1,60 +1,54 @@
 import random
 
-def FindRandomMoce(validMoves):
-    return random.choice(validMoves) 
 piece_score = {"K": 0, "Q": 10, "R": 5, "B": 3, "N": 3, "p": 1}
 checkmate = 1000
 stalemate = 0
+_depth = 3
 
 def find_random_move(validMoves):
     return random.choice(validMoves)
 
 def find_best_move(gs, validMoves):
-    turn_multiplier = 1 if gs.whiteToMove else -1
-
-    opps_min_max_score = checkmate
-    best_move = None
-    random.shuffle(validMoves)
-
-    for player_move in validMoves:
-        gs.make_move(player_move)
-
-        opps_move = gs.valid_moves()
-
-        if gs.stalemate:
-            opps_max_score = stalemate
-        elif gs.checkmate:
-            opps_max_score = -checkmate
-        else:
-            opps_max_score = -checkmate
-
-            for opps_move in opps_move:
-                gs.make_move(opps_move)
-                gs.get_valid_moves()
-                if gs.checkmate:
-                    score = checkmate
-                elif gs.stalemate:
-                    score = stalemate
-                else:
-                    score = -turn_multiplier * board_material(gs.board)
-
-                if score > opps_max_score:
-                    opps_max_score = score
-                gs.undo_move()
-        if opps_max_score < opps_min_max_score:
-            opps_min_max_score = opps_max_score
-            best_move = player_move
-        gs.undo_move()
-    return best_move
-
-def find_best_move_min_max(gs, validMoves):
     global next_move
-
-
+    next_move = None
+    find_best_move_nega_max(gs, validMoves, _depth, 1 if gs.whiteToMove else -1)
     return next_move
 
-def find_min_max(gs, validMoves, depth, whiteToMove):
+def find_best_move_nega_max(gs, validMoves, deth, turn_multiplier):
     global next_move
+    if deth == 0:
+        return turn_multiplier * score_board(gs)
+
+    max_score = -checkmate
+    for move in validMoves:
+        gs.make_move(move)
+        next_move = gs.valid_moves()
+        score = -find_best_move_nega_max(gs, next_move, deth-1, -turn_multiplier)
+        if score > max_score:
+            max_score = score
+            if deth == _depth:
+                next_move = move
+        gs.undo_move()
+    return max_score
+
+def score_board(gs):
+    if gs.checkmate:
+        if gs.whiteToMove:
+            return -checkmate # Black wins
+        else:
+            return checkmate # White wins
+    elif gs.stalemate:
+        return stalemate
+
+    score = 0
+
+    for row in gs.board:
+        for square in row:
+            if square[0] == 'w':
+                score += piece_score[square[1]]
+            elif square[0] == 'b':
+                score -= piece_score[square[1]]
+    return score
 
 def board_material(board):
     score = 0

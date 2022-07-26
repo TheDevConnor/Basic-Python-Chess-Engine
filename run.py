@@ -2,10 +2,14 @@ import sys, os
 from multiprocessing import Process
 
 def chess_server():
-    os.system(sys.executable + " " + "Chess/ChessServer.py")
-
+    pass
 def chess_main():
-    os.system(sys.executable + " " + "Chess/ChessMain.py")
+    try:
+        os.system(sys.executable + " " + "Chess/ChessMain.py")
+    except OSError as e:
+        print(e)
+    except Exception as ex:
+        print(ex)
 
 if __name__ == "__main__":
     processes = []
