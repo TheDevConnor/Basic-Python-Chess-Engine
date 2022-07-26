@@ -14,7 +14,7 @@ https://www.youtube.com/watch?v=c_qNC1lL4qA
 
 ---------------------------------------------------
 
-###Running
+### Running
 
 The run.py file is setup to run the Chess Engine
 
