@@ -1,15 +1,17 @@
 # Handles the user input and game state information
 import subprocess
-import ChessClient
 import multiprocessing as mp
 global mainThread
     
 def init():
+    import ChessClient
     import sys, os
     import pygame as p
     from pygame import mixer
     import DebuggerWindow
     import ChessEngine, ChessAi
+    _established = False
+    print("established = " + str(_established))
     BOARD_WIDTH = BOARD_HEIGHT = 500  # 500 is the best size for the window do to the size and reselution of the pieces
     MOVE_LOG_PANEL_WIDTH = 250
     MOVE_LOG_PANEL_HEIGHT = BOARD_HEIGHT
@@ -64,7 +66,7 @@ def init():
 
 
     # Play Music
-    mixer.music.play(-1)
+    #mixer.music.play(-1)
     # Set Music volume and Sound effect volume
     mixer.music.set_volume(0.09)
 
@@ -113,6 +115,7 @@ def init():
         multiplayer = True # If the game is multiplayer or not
 
         while running:
+            ChessClient.ChessClient().receive_message(_established)
             #Check to see if a human is playing
             isHumanTurn = (gs.whiteToMove and playerOne) or (not gs.whiteToMove and playerTwo)
 
@@ -151,7 +154,7 @@ def init():
                                     else:
                                         gs.make_move(valid_moves[i])
                                         try:
-                                            ChessClient.send_message(("35.223.181.160," + move.getChessNotation()))
+                                            _established = ChessClient.ChessClient().send_message(("10.0.0.101," + move.getChessNotation()), _established)
                                         except Exception as e:
                                             print(e)
                                         moveMade = True 

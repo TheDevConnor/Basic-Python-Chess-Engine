@@ -125,13 +125,13 @@ class GameState():
         # Undo the castle move
         if move.castle:
             if move.endCol - move.startCol == 2: # Kings side castle
-                self.get_cell(move.endRow, move.endCol + 1, self.get_cell(move.endRow, move.endCol - 1))
-                self.get_cell(move.endRow, move.endCol - 1, '--')
+                self.get_cell(move.endRow, move.endCol+1, self.get_cell(move.endRow, move.endCol-1))
+                self.get_cell(move.endRow, move.endCol-1, '--')
                 #self.board[move.endRow][move.endCol+1] = self.board[move.endRow][move.endCol-1] # Moves the rook
                 #self.board[move.endRow][move.endCol-1] = '--' # Erase the old rook
             else: # Queen side castle
-                self.get_cell(move.endRow, move.endCol - 2, self.get_cell(move.endRow, move.endCol + 1))
-                self.get_cell(move.endRow, move.endCol + 1, '--')
+                self.get_cell(move.endRow, move.endCol-2, self.get_cell(move.endRow, move.endCol+1))
+                self.get_cell(move.endRow, move.endCol+1, '--')
                 #self.board[move.endRow][move.endCol-2] = self.board[move.endRow][move.endCol+1] # Moves the rook
                 #self.board[move.endRow][move.endCol+1] = '--' # Erase the old rook
 

@@ -1,5 +1,6 @@
 import socket
 import threading
+import time
 
 
 
@@ -27,6 +28,7 @@ class server:
             while connected:
                 data = conn.recv(_header).decode(_format)
                 if data:
+                    conn.sendall(f"ServerKeepAlive,Time:{time.localtime}".encode())
                     msg_len = len(data)
                     msg = conn.recv(msg_len).decode(_format)
                     print(f"{_address} sent packet {data}")
@@ -40,6 +42,8 @@ class server:
                     _client_dict[str(conn.getpeername()[0])] = str(splitmsg[0])
                     print(_client_dict[str(conn.getpeername()[0])])
                     print(f"{str(conn.getpeername()[0])} declared target {splitmsg[0]}")
+                else:
+                    conn.sendall(f"ServerKeepAlive,Time:{time.localtime}".encode())
                     
             conn.close()
 
