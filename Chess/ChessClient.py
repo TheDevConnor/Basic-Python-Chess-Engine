@@ -3,7 +3,7 @@ import socket
 _header = 512  
 _disconnect = "quit"
 _port = 5000
-_server = "10.0.0.140"
+_server = "10.0.0.101"
 _address = (_server, _port)
 uinput = ["", "", "", ""]
 
@@ -23,7 +23,8 @@ def message(message):
         if data:
             print(data)
             _client_socket.sendall(message.encode())
+            _client_socket.close()
+            return data
         else:
             _client_socket.sendall(message.encode())
-            break
-    return data
+            return data

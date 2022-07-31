@@ -47,12 +47,15 @@ class server:
                     print(f"{str(conn.getpeername()[0])} declared target {splitmsg[0]}")
                     for client in _clients:
                         print(str(client))
-                        if(str(client).find(splitmsg[0] >= 0)):
-                            client.sendall(splitmsg[1])
+                        if(str(client).find(splitmsg[0]) >= 0):
+                            client.sendall(str(splitmsg[1]).encode())
                             print(f"{splitmsg[0], client, splitmsg[1]}")
                             connected = False
                             return
                         return
+                    conn.close()
+                    start_server()
+                    return
                 else:
                     conn.sendall(f"ServerKeepAlive,Time:{time.localtime}".encode())
             _clients.pop(conn.fileno())
