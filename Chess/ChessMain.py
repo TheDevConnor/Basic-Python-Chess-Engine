@@ -1,5 +1,5 @@
 # Handles the user input and game state information
-import sys, os
+import sys, os, time
 import pygame as p
 from pygame import mixer
 import ChessEngine, ChessAi
@@ -14,9 +14,12 @@ SQ_SIZE = BOARD_HEIGHT // DIMENSION
 MAX_FPS = 15  # For animation later on
 IMAGES = {}
 DEBUG_MODE = True
+WIDTH = 750
+HEIGHT = 500
     
 # Changes the title of the window and the programs image
 p.display.set_caption('Chess')
+screen = p.display.set_mode((BOARD_WIDTH + MOVE_LOG_PANEL_WIDTH, BOARD_HEIGHT))
 mixer.init()
 
 
@@ -29,10 +32,15 @@ ImageLinuxPath = "./Chess/images/chess.png"
 ImageDirWin = ".\Chess\images\\"
 ImageDirLinux = "./Chess/images/"
 
-MusicWinPath = ".\Chess\Music\sweet_zaza.mp3"
-MusicLinuxPath = "./Chess/Music/sweet_zaza.mp3"
+MusicWinPath = ".\Chess\Music\Sonar.mp3"
+MusicLinuxPath = "./Chess/Music/Sonar.mp3"
+
+ButtonImgLinux = "./Chess/images/Buttons/start.png"
+start_button_img = p.image.load(ButtonImgLinux).convert_alpha()
 
 PieceMovedPath = "./Chess/Music/PieceMoved.mp3"
+
+background = "./Chess/images/Bg/bg.png"
 
 InCheckPath = "./Chess/Music/inCheck.mp3"
 
@@ -62,8 +70,86 @@ else:
 # Play Music
 mixer.music.play(-1)
 # Set Music volume and Sound effect volume
-mixer.music.set_volume(0.09)
+mixer.music.set_volume(.05)
 
+class Button():
+    p.init()
+    def __init__(self, text, width, height, pos, elevation):
+        # Animate the button
+        self.elevation = elevation
+        self.dynamic_elevation = elevation
+        self.original_elevation = pos[1]
+
+        # Top rectangle
+        self.top_rect = p.Rect(pos, (width, height))
+        self.top_color = '#65999A' 
+
+        # Bottom rectangle
+        self.bottom_rect = p.Rect(pos, (width, elevation))
+        self.bottom_color = '#C0D5D6'
+
+        # Render Text
+        font = p.font.SysFont('Poppins', 32, False, False)
+        self.text_surf = font.render(text, True, '#FFFFFF')
+        self.text_rect = self.text_surf.get_rect(center=self.top_rect.center)
+        
+
+    def draw(self):
+        # Elevation Animation
+        self.top_rect.y = self.original_elevation - self.dynamic_elevation
+        self.text_rect.center = self.top_rect.center
+        self.bottom_rect.midtop = self.top_rect.midtop
+        self.bottom_rect.height = self.top_rect.height + self.dynamic_elevation
+
+        # Draw Bottom Rectangle
+        p.draw.rect(screen, self.bottom_color, self.bottom_rect, border_radius=14)
+        # Draw Top Rectangle
+        p.draw.rect(screen, self.top_color, self.top_rect, border_radius=15)
+        # Draw Text
+        screen.blit(self.text_surf, self.text_rect)
+        self.is_clicked()    
+
+    def is_clicked(self):
+        pressed = False
+        is_mouse_pos = p.mouse.get_pos()
+
+        if self.top_rect.collidepoint(is_mouse_pos):
+            self.top_color = '#9A6665'
+            if p.mouse.get_pressed()[0]:
+                self.dynamic_elevation = 0
+                pressed = True
+            else:
+                self.dynamic_elevation = self.elevation
+                if pressed == True:
+                    print("Button Pressed")
+                    pressed = False
+        else:
+            self.dynamic_elevation = self.elevation
+            self.top_color = '#65999A'
+            pressed = False
+        return pressed
+
+# Create the nstance of the button
+start_button = Button('Start', 200, 50,(270, 300), 6)
+start_game = Button('Play', 200, 50,(270, 150), 4)
+player_one = Button('Player 1', 200, 50,(270, 250), 4)
+player_two = Button('Player 2', 200, 50,(270, 350), 4)
+
+# def add_outline_to_image(image: p.Surface, thickness: int, color: tuple, color_key: tuple = ('#0F1718')) -> p.Surface:
+#     mask = p.mask.from_surface(image)
+#     mask_surf = mask.to_surface(setcolor=color)
+#     mask_surf.set_colorkey((0,0,0))
+
+#     new_img = p.Surface((image.get_width() + 2, image.get_height() + 2))
+#     new_img.fill(color_key)
+#     new_img.set_colorkey(color_key)
+
+#     for i in -thickness, thickness:
+#         new_img.blit(mask_surf, (i + thickness, thickness))
+#         new_img.blit(mask_surf, (thickness, i + thickness))
+#     new_img.blit(image, (thickness, thickness))
+
+#     return new_img
 
 # Loading the images and will initialize a global dictionary of images.
 
@@ -78,12 +164,83 @@ def load_images():
             IMAGES[piece] = p.transform.scale(p.image.load(ImageDirLinux + piece + ".png"), (SQ_SIZE, SQ_SIZE))
     # Note: we can access an image by saying  'IMAGES['wp']'
 
+# Tells the user if they are playing as white or black
+playerOne = player_one # IF a person is playing white then the varuable will be true while if ai plays then false
+playerTwo = player_two # Same as a bove just for black
+multiplayer = True # If the game is multiplayer or not
 
-# This will handle the user input and update the graphics
 
+# This is the main menu for the game
 def main():
     p.init()
     screen = p.display.set_mode((BOARD_WIDTH + MOVE_LOG_PANEL_WIDTH, BOARD_HEIGHT))
+    clock = p.time.Clock()
+
+    font = p.font.SysFont('Poppins', 32, True, False)
+    text_surf = font.render("Chess Engine in Python", False, (255, 255, 255))
+    # text_with_ouline = add_outline_to_image(text_surf, 2, (0, 0, 0))
+    # create a rectangular object for the
+    # text surface object
+    textRect = text_surf.get_rect()
+    # set the center of the rectangular object.
+    textRect.center = (WIDTH // 2, HEIGHT // 2)
+
+    running = True
+
+    while running:
+        for e in p.event.get():
+            if e.type == p.QUIT:
+                running = False
+
+        bg = p.transform.scale(p.image.load(background), (WIDTH, HEIGHT))
+        screen.blit(bg, (0, 0))
+        screen.blit(text_surf, textRect)
+
+        # Draw the buttons
+        start_button.draw()
+        if start_button.is_clicked():
+            time.sleep(.5)
+            Settings()
+
+        clock.tick(MAX_FPS)
+        p.display.flip()
+
+def Settings():
+    p.init()
+    screen = p.display.set_mode((BOARD_WIDTH + MOVE_LOG_PANEL_WIDTH, BOARD_HEIGHT))
+    clock = p.time.Clock()
+
+    running = True
+
+    while running:
+        for e in p.event.get():
+            if e.type == p.QUIT:
+                running = False
+
+        bg = p.transform.scale(p.image.load(background), (WIDTH, HEIGHT))
+        screen.blit(bg, (0, 0))
+
+        # Draw the buttons
+        start_game.draw()
+        player_one.draw()
+        player_two.draw()
+        if start_game.is_clicked():
+            time.sleep(.5)
+            Chess()
+        if player_one.is_clicked():
+            playerOne = True
+        else:
+            playerOne = False
+        if player_two.is_clicked():
+            playerTwo = False
+        else:
+            playerTwo = True
+
+        clock.tick(MAX_FPS)
+        p.display.flip()
+# This will handle the user input and update the graphics
+def Chess():
+    p.init()
     clock = p.time.Clock()
     screen.fill(p.Color("black"))
     gs = ChessEngine.GameState()
@@ -102,10 +259,6 @@ def main():
     playerClicks = [] # Keep track of the player clicks (two tuples: [(6, 4), (4, 4)])
 
     gameOver = False
-
-    playerOne = True # IF a person is playing white then the varuable will be true while if ai plays then false
-    playerTwo = True # Same as a bove just for black
-    multiplayer = True # If the game is multiplayer or not
 
     while running:
         #Check to see if a human is playing
@@ -165,9 +318,9 @@ def main():
 
         # The Ai move finder object
         if not gameOver and not isHumanTurn:
-            AIMove = ChessAi.find_best_move(gs, valid_moves)
-            if AIMove is None:
-                AIMove = ChessAi.find_random_move(valid_moves)
+            # AIMove = ChessAi.find_best_move(gs, valid_moves)
+            # if AIMove is None:
+            AIMove = ChessAi.find_random_move(valid_moves)
             gs.make_move(AIMove)
             moveMade = True
             animate = True
@@ -315,23 +468,3 @@ def drawText(screen, text):
 # This main is a pain in our ass
 if __name__ == "__main__":
     main()
-
-
-# if __name__ == "__main__":
-#     processes = []
-#     num_processes = 1
-
-#     for i in range(num_processes):
-#         mainThread = mp.Process(target=init(), args=())
-#         #p1 = mp.Process(target=ChessClient.message, args=("NAN"))
-#         processes.append(mainThread)
-#         #processes.append(p1)
-
-#     for process in processes:
-#         process.start()
-    
-#     for process in processes:
-#         process.join()
-
-
-#     print("\nok\n")

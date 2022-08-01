@@ -2,9 +2,6 @@
 # as determine the valid moves as well
 # keeping take of the move logs
 
-from shutil import move
-
-
 class GameState():
     def __init__(self):
         # Board is a 8x8 two dimensional plane
