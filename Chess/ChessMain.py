@@ -165,9 +165,9 @@ def load_images():
     # Note: we can access an image by saying  'IMAGES['wp']'
 
 # Tells the user if they are playing as white or black
-playerOne = player_one # IF a person is playing white then the varuable will be true while if ai plays then false
-playerTwo = player_two # Same as a bove just for black
-multiplayer = True # If the game is multiplayer or not
+playerOne =  True # IF a person is playing white then the varuable will be true while if ai plays then false
+playerTwo = True # Same as a bove just for black
+# multiplayer = True # If the game is multiplayer or not
 
 
 # This is the main menu for the game
@@ -225,19 +225,14 @@ def Settings():
         player_one.draw()
         player_two.draw()
         if start_game.is_clicked():
-            time.sleep(.5)
-            Chess()
-        if player_one.is_clicked():
-            playerOne = True
-        else:
-            playerOne = False
-        if player_two.is_clicked():
-            playerTwo = False
-        else:
-            playerTwo = True
+            start_game_with_delay()
 
         clock.tick(MAX_FPS)
         p.display.flip()
+
+def start_game_with_delay():
+    time.sleep(.5)
+    Chess()
 # This will handle the user input and update the graphics
 def Chess():
     p.init()
@@ -318,9 +313,13 @@ def Chess():
 
         # The Ai move finder object
         if not gameOver and not isHumanTurn:
-            # AIMove = ChessAi.find_best_move(gs, valid_moves)
-            # if AIMove is None:
-            AIMove = ChessAi.find_random_move(valid_moves)
+            valid_moves = gs.valid_moves()
+
+            AIMove = ChessAi.find_best_move(gs, valid_moves)
+
+            if AIMove is None:
+                AIMove = ChessAi.find_random_move(valid_moves)
+
             gs.make_move(AIMove)
             moveMade = True
             animate = True
@@ -423,12 +422,13 @@ def animateMove(move, screen, board, clock):
                 endSquare = p.Rect(move.endCol * SQ_SIZE, enPassantRow * SQ_SIZE, SQ_SIZE, SQ_SIZE)
             screen.blit(IMAGES[move.pieceCaptured], endSquare)
 
+
         # Draw moing piece
         screen.blit(IMAGES[move.pieceMoved], p.Rect(c*SQ_SIZE, r*SQ_SIZE, SQ_SIZE, SQ_SIZE))
         p.display.flip()
         clock.tick(60)
 
-def draw_move_log(screen, gs, font):
+def draw_move_log(screen, gs: ChessEngine.GameState, font):
     move_log_rect = p.Rect(BOARD_WIDTH, 0, MOVE_LOG_PANEL_WIDTH, MOVE_LOG_PANEL_HEIGHT)
     p.draw.rect(screen, p.Color("black"), move_log_rect)
 
