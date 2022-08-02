@@ -165,8 +165,8 @@ def load_images():
     # Note: we can access an image by saying  'IMAGES['wp']'
 
 # Tells the user if they are playing as white or black
-playerOne =  True # IF a person is playing white then the varuable will be true while if ai plays then false
-playerTwo = True # Same as a bove just for black
+playerOne = True # IF a person is playing white then the varuable will be true while if ai plays then false
+playerTwo = False # Same as a bove just for black
 # multiplayer = True # If the game is multiplayer or not
 
 
@@ -467,4 +467,4 @@ def drawText(screen, text):
 
 # This main is a pain in our ass
 if __name__ == "__main__":
-    main()
+    Chess()

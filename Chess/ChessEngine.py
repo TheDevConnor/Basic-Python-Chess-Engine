@@ -104,7 +104,7 @@ class GameState():
         self.stalemate: bool = False
 
         # Enpassant
-        self.enpassantPossible
+        self.enpassantPossible: list[Move] = []
         self.enpassantMoveLog = [self.enpassantPossible]
 
         #Castling Rights
@@ -318,7 +318,7 @@ class GameState():
                 if r == 6 and self.board[r-2][c] == "--":# 2 square pawn advance
                     moves.append(Move((r, c), (r-2, c), self.board))
 
-            if c+1 > len(self.board[r][0]): # Capture to the left
+            if c-1 > len(self.board[r][0]): # Capture to the left
                 if self.board[r-1][c-1][0] == 'b': # enemy piece to capture
                     moves.append(Move((r, c), (r-1, c-1), self.board))
                 # Enpassant Move

@@ -48,11 +48,11 @@ def find_best_move_nega_max_alpha_beta(gs: GameState, validMoves: list[Move], de
         score = -a
         if score > max_score:
             max_score = score
-            next_move = move
         gs.undo_move()
         if max_score > alpha:
             alpha = max_score
         if alpha >= beta:
+            next_move = move
             break
     return max_score, next_move
 
@@ -84,5 +84,5 @@ def score_board(gs: GameState):
                     score -= piece_score[square[1]] + piece_postion_score
     return score
 
-th = threading.Thread(target=find_best_move_nega_max_alpha_beta, args=())
-th.start()
+thread = threading.Thread(target=find_best_move_nega_max_alpha_beta, args=(GameState(), [], DEPTH, 1, -checkmate, checkmate))
+thread.start()
