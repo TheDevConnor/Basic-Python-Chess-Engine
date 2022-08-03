@@ -60,7 +60,7 @@ piece_postion_scores = {"N": knight_score, "B": bishop_score, "Q": queen_score,
 
 checkmate = 1000
 stalemate = 0
-DEPTH = 5
+DEPTH = 3
 
 def find_random_move(validMoves):
     return validMoves[random.randint(0, len(validMoves)-1)]
@@ -94,7 +94,7 @@ def find_best_move_nega_max_alpha_beta(gs, validMoves, deth, alpha, beta, turn_m
             max_score = score
             if deth == DEPTH:
                 next_move = move
-                # print(f"Move: {move}, Score: {score}, Counter: {counter}")
+                print(f"Move: {move}, Score: {score}, Counter: {counter}")
         gs.undo_move()
 
         if max_score > alpha:

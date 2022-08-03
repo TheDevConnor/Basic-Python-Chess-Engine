@@ -80,17 +80,17 @@ class GameState():
         # Castle Move
         if move.castle:
             if move.endCol - move.startCol == 2: # Kings side castle
-                self.set_cell(move.endRow, move.endCol - 1, self.set_cell(move.endRow, move.endCol + 1))
-                self.set_cell(move.endRow, move.endCol + 1, '--')
+                # self.set_cell(move.endRow, move.endCol - 1, self.set_cell(move.endRow, move.endCol + 1))
+                # self.set_cell(move.endRow, move.endCol + 1, '--')
 
-                # self.board[move.endRow][move.endCol-1] = self.board[move.endRow][move.endCol+1] # Moves the rook
-                # self.board[move.endRow][move.endCol+1] = '--' # Erase the old rook
+                self.board[move.endRow][move.endCol-1] = self.board[move.endRow][move.endCol+1] # Moves the rook
+                self.board[move.endRow][move.endCol+1] = '--' # Erase the old rook
             else: # Queen side castle
-                self.set_cell(move.endRow, move.endCol + 1, self.set_cell(move.endRow, move.endCol - 2))
-                self.set_cell(move.endRow, move.endCol - 2, '--')
+                # self.set_cell(move.endRow, move.endCol + 1, self.set_cell(move.endRow, move.endCol - 2))
+                # self.set_cell(move.endRow, move.endCol - 2, '--')
 
-                # self.board[move.endRow][move.endCol+1] = self.board[move.endRow][move.endCol-2] # Moves the rook
-                # self.board[move.endRow][move.endCol-2] = '--' # Erase the old rook
+                self.board[move.endRow][move.endCol+1] = self.board[move.endRow][move.endCol-2] # Moves the rook
+                self.board[move.endRow][move.endCol-2] = '--' # Erase the old rook
 
         self.enpassantMoveLog.append(self.enpassantPossible)
 
@@ -140,15 +140,15 @@ class GameState():
         # Undo the castle move
         if move.castle:
             if move.endCol - move.startCol == 2: # Kings side castle
-                self.set_cell(move.endRow, move.endCol+1, self.set_cell(move.endRow, move.endCol-1))
-                self.set_cell(move.endRow, move.endCol-1, '--')
-                # self.board[move.endRow][move.endCol+1] = self.board[move.endRow][move.endCol-1] # Moves the rook
-                # self.board[move.endRow][move.endCol-1] = '--' # Erase the old rook
+                # self.set_cell(move.endRow, move.endCol+1, self.set_cell(move.endRow, move.endCol-1))
+                # self.set_cell(move.endRow, move.endCol-1, '--')
+                self.board[move.endRow][move.endCol+1] = self.board[move.endRow][move.endCol-1] # Moves the rook
+                self.board[move.endRow][move.endCol-1] = '--' # Erase the old rook
             else: # Queen side castle
-                self.set_cell(move.endRow, move.endCol-2, self.set_cell(move.endRow, move.endCol+1))
-                self.set_cell(move.endRow, move.endCol+1, '--')
-                # self.board[move.endRow][move.endCol-2] = self.board[move.endRow][move.endCol+1] # Moves the rook
-                # self.board[move.endRow][move.endCol+1] = '--' # Erase the old rook
+                # self.set_cell(move.endRow, move.endCol-2, self.set_cell(move.endRow, move.endCol+1))
+                # self.set_cell(move.endRow, move.endCol+1, '--')
+                self.board[move.endRow][move.endCol-2] = self.board[move.endRow][move.endCol+1] # Moves the rook
+                self.board[move.endRow][move.endCol+1] = '--' # Erase the old rook
 
         # Undo checkmate and stalemate
         self.checkmate = False
