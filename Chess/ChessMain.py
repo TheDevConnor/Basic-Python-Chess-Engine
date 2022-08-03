@@ -3,6 +3,7 @@ import sys, os, time
 import pygame as p
 from pygame import mixer
 import ChessEngine, ChessAi
+from multiprocessing import Process, Queue
 
 #_established = False
 #print("established = " + str(_established))
@@ -20,7 +21,7 @@ HEIGHT = 500
 # Changes the title of the window and the programs image
 p.display.set_caption('Chess')
 screen = p.display.set_mode((BOARD_WIDTH + MOVE_LOG_PANEL_WIDTH, BOARD_HEIGHT))
-mixer.init()
+# mixer.init()
 
 
 global inChessDir
@@ -57,20 +58,20 @@ else:
 os=sys.platform
 if(os == "win32"):
     p.display.set_icon(p.image.load(ImageWinPath))
-    mixer.music.load(MusicWinPath)
+    # mixer.music.load(MusicWinPath)
 elif(os == "cygwin"):
     p.display.set_icon(p.image.load(ImageLinuxPath))
-    mixer.music.load(MusicWinPath)
+    # mixer.music.load(MusicWinPath)
 else:
     p.display.set_icon(p.image.load(ImageLinuxPath))
-    mixer.music.load(MusicLinuxPath)
+    # mixer.music.load(MusicLinuxPath)
 
 
 
 # Play Music
-mixer.music.play(-1)
+# mixer.music.play(-1)
 # Set Music volume and Sound effect volume
-mixer.music.set_volume(.05)
+# mixer.music.set_volume(.05)
 
 class Button():
     p.init()
@@ -135,24 +136,6 @@ start_game = Button('Play', 200, 50,(270, 150), 4)
 player_one = Button('Player 1', 200, 50,(270, 250), 4)
 player_two = Button('Player 2', 200, 50,(270, 350), 4)
 
-# def add_outline_to_image(image: p.Surface, thickness: int, color: tuple, color_key: tuple = ('#0F1718')) -> p.Surface:
-#     mask = p.mask.from_surface(image)
-#     mask_surf = mask.to_surface(setcolor=color)
-#     mask_surf.set_colorkey((0,0,0))
-
-#     new_img = p.Surface((image.get_width() + 2, image.get_height() + 2))
-#     new_img.fill(color_key)
-#     new_img.set_colorkey(color_key)
-
-#     for i in -thickness, thickness:
-#         new_img.blit(mask_surf, (i + thickness, thickness))
-#         new_img.blit(mask_surf, (thickness, i + thickness))
-#     new_img.blit(image, (thickness, thickness))
-
-#     return new_img
-
-# Loading the images and will initialize a global dictionary of images.
-
 def load_images():
     pieces = ["--","wp", "wN", "wB", "wR", "wQ", "wK", "bp", "bN", "bB", "bR", "bQ", "bK"]
     for piece in pieces:
@@ -166,9 +149,7 @@ def load_images():
 
 # Tells the user if they are playing as white or black
 playerOne = True # IF a person is playing white then the varuable will be true while if ai plays then false
-playerTwo = False # Same as a bove just for black
-# multiplayer = True # If the game is multiplayer or not
-
+playerTwo = False # Same as above just for black
 
 # This is the main menu for the game
 def main():
@@ -233,6 +214,7 @@ def Settings():
 def start_game_with_delay():
     time.sleep(.5)
     Chess()
+
 # This will handle the user input and update the graphics
 def Chess():
     p.init()
@@ -253,6 +235,10 @@ def Chess():
     sqSelected = () # On start no square will be selected, also keeps track of the user input (tuple: row, col)
     playerClicks = [] # Keep track of the player clicks (two tuples: [(6, 4), (4, 4)])
 
+    # For the AI to play
+    AI_thinking = False
+    move_find_process = None
+
     gameOver = False
 
     while running:
@@ -265,7 +251,7 @@ def Chess():
 
             # Mouse Input Handler
             elif e.type == p.MOUSEBUTTONDOWN:
-                if not gameOver and isHumanTurn:
+                if not gameOver:
                     location = p.mouse.get_pos() # This is the postion of the (x,y) location of the mouse
                 
                     col = location[0] //SQ_SIZE
@@ -278,7 +264,7 @@ def Chess():
                         sqSelected = (row, col)
                         playerClicks.append(sqSelected) # Append for both first and secound clicks
                     
-                    if len(playerClicks) == 2: # After the secound click
+                    if len(playerClicks) == 2 and isHumanTurn: # After the secound click
                         move = ChessEngine.Move(playerClicks[0], playerClicks[1], gs.board)
                         #print(move.getChessNotation())
 
@@ -287,7 +273,7 @@ def Chess():
                                 gs.make_move(valid_moves[i])
                                 moveMade = True 
                                 animate = True
-                                mixer.Sound(PieceMovedPath).play()
+                                # mixer.Sound(PieceMovedPath).play()
                                 sqSelected = () # Reset the user clicks
                                 playerClicks = []
                                 
@@ -313,17 +299,13 @@ def Chess():
 
         # The Ai move finder object
         if not gameOver and not isHumanTurn:
-            valid_moves = gs.valid_moves()
-
             AIMove = ChessAi.find_best_move(gs, valid_moves)
-
             if AIMove is None:
                 AIMove = ChessAi.find_random_move(valid_moves)
-
             gs.make_move(AIMove)
             moveMade = True
             animate = True
-            mixer.Sound(PieceMovedPath).play()
+            # mixer.Sound(PieceMovedPath).play()
 
         if moveMade:
             if animate:
@@ -347,7 +329,6 @@ def Chess():
 
         clock.tick(MAX_FPS)
         p.display.flip()
-
 
 # Highlight the square selected on the board and the piece selected
 
