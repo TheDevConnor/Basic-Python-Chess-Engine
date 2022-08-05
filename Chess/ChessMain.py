@@ -21,7 +21,7 @@ HEIGHT = 500
 # Changes the title of the window and the programs image
 p.display.set_caption('Chess')
 screen = p.display.set_mode((BOARD_WIDTH + MOVE_LOG_PANEL_WIDTH, BOARD_HEIGHT))
-# mixer.init()
+mixer.init()
 
 
 global inChessDir
@@ -58,20 +58,20 @@ else:
 os=sys.platform
 if(os == "win32"):
     p.display.set_icon(p.image.load(ImageWinPath))
-    # mixer.music.load(MusicWinPath)
+    mixer.music.load(MusicWinPath)
 elif(os == "cygwin"):
     p.display.set_icon(p.image.load(ImageLinuxPath))
-    # mixer.music.load(MusicWinPath)
+    mixer.music.load(MusicWinPath)
 else:
     p.display.set_icon(p.image.load(ImageLinuxPath))
-    # mixer.music.load(MusicLinuxPath)
+    mixer.music.load(MusicLinuxPath)
 
 
 
 # Play Music
-# mixer.music.play(-1)
+mixer.music.play(-1)
 # Set Music volume and Sound effect volume
-# mixer.music.set_volume(.05)
+mixer.music.set_volume(.05)
 
 class Button():
     p.init()
@@ -273,7 +273,7 @@ def Chess():
                                 gs.make_move(valid_moves[i])
                                 moveMade = True 
                                 animate = True
-                                # mixer.Sound(PieceMovedPath).play()
+                                mixer.Sound(PieceMovedPath).play()
                                 sqSelected = () # Reset the user clicks
                                 playerClicks = []
                                 
@@ -305,7 +305,7 @@ def Chess():
             gs.make_move(AIMove)
             moveMade = True
             animate = True
-            # mixer.Sound(PieceMovedPath).play()
+            mixer.Sound(PieceMovedPath).play()
 
         if moveMade:
             if animate:
