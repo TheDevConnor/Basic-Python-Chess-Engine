@@ -19,7 +19,7 @@ WIDTH = 750
 HEIGHT = 500
     
 # Changes the title of the window and the programs image
-p.display.set_caption('Chess')
+p.display.set_caption('GrugChess0')
 screen = p.display.set_mode((BOARD_WIDTH + MOVE_LOG_PANEL_WIDTH, BOARD_HEIGHT))
 mixer.init()
 
@@ -58,20 +58,20 @@ else:
 os=sys.platform
 if(os == "win32"):
     p.display.set_icon(p.image.load(ImageWinPath))
-    mixer.music.load(MusicWinPath)
+    # mixer.music.load(MusicWinPath)
 elif(os == "cygwin"):
     p.display.set_icon(p.image.load(ImageLinuxPath))
-    mixer.music.load(MusicWinPath)
+    # mixer.music.load(MusicWinPath)
 else:
     p.display.set_icon(p.image.load(ImageLinuxPath))
-    mixer.music.load(MusicLinuxPath)
+    # mixer.music.load(MusicLinuxPath)
 
 
 
 # Play Music
-mixer.music.play(-1)
+# mixer.music.play(-1)
 # Set Music volume and Sound effect volume
-mixer.music.set_volume(.05)
+# mixer.music.set_volume(.05)
 
 def load_images():
     pieces = ["--","wp", "wN", "wB", "wR", "wQ", "wK", "bp", "bN", "bB", "bR", "bQ", "bK"]
@@ -85,8 +85,8 @@ def load_images():
     # Note: we can access an image by saying  'IMAGES['wp']'
 
 # Tells the user if they are playing as white or black
-playerOne = True # IF a person is playing white then the varuable will be true while if ai plays then false
-playerTwo = False # Same as above just for black
+playerOne = False # IF a person is playing white then the varuable will be true while if ai plays then false
+playerTwo = True # Same as above just for black
 
 # This will handle the user input and update the graphics
 def Chess():
@@ -146,7 +146,7 @@ def Chess():
                                 gs.make_move(valid_moves[i])
                                 moveMade = True 
                                 animate = True
-                                mixer.Sound(PieceMovedPath).play()
+                                # mixer.Sound(PieceMovedPath).play()
                                 sqSelected = () # Reset the user clicks
                                 playerClicks = []
                                 
@@ -178,7 +178,7 @@ def Chess():
             gs.make_move(AIMove)
             moveMade = True
             animate = True
-            mixer.Sound(PieceMovedPath).play()
+            # mixer.Sound(PieceMovedPath).play()
 
         if moveMade:
             if animate:

@@ -60,7 +60,7 @@ piece_postion_scores = {"N": knight_score, "B": bishop_score, "Q": queen_score,
 
 checkmate = 1000
 stalemate = 0
-DEPTH = 3
+DEPTH = 1
 
 def find_random_move(validMoves):
     return validMoves[random.randint(0, len(validMoves)-1)]
@@ -127,8 +127,8 @@ def score_board(gs):
                         piece_postion_score = piece_postion_scores[square[1]][row][col]
 
                 if square[0] == 'w':
-                    score += piece_score[square[1]] + piece_postion_score * .39
+                    score += piece_score[square[1]] + piece_postion_score * .1
                 elif square[0] == 'b':
-                    score -= piece_score[square[1]] + piece_postion_score * .39
+                    score -= piece_score[square[1]] + piece_postion_score * .1
                 
     return score
