@@ -60,19 +60,18 @@ piece_postion_scores = {"N": knight_score, "B": bishop_score, "Q": queen_score,
 
 checkmate = 1000
 stalemate = 0
-DEPTH = 1
+DEPTH = 3
 
 def find_random_move(validMoves):
     return validMoves[random.randint(0, len(validMoves)-1)]
 
-def find_best_move(gs, validMoves):
+def find_best_move(gs, validMoves, return_queue):
     global next_move,counter
     next_move = None
     random.shuffle(validMoves)
     counter = 0
     find_best_move_nega_max_alpha_beta(gs, validMoves, DEPTH, -checkmate, checkmate, 1 if gs.whiteToMove else -1)
-    # returnQueue.put(next_move)
-    return next_move
+    return_queue.put(next_move)
 
 def find_best_move_nega_max_alpha_beta(gs, validMoves, deth, alpha, beta, turn_multiplier):
     global next_move,counter

@@ -1,8 +1,11 @@
 # Handles the user input and game state information
+from concurrent.futures import process
+import multiprocessing
 import sys, os, time
 import pygame as p
 from pygame import mixer
 import ChessEngine, ChessAi
+import multiprocessing as mp
 from multiprocessing import Process, Queue
 
 #_established = False
@@ -85,8 +88,8 @@ def load_images():
     # Note: we can access an image by saying  'IMAGES['wp']'
 
 # Tells the user if they are playing as white or black
-playerOne = False # IF a person is playing white then the varuable will be true while if ai plays then false
-playerTwo = True # Same as above just for black
+playerOne = True # IF a person is playing white then the varuable will be true while if ai plays then false
+playerTwo = False # Same as above just for black
 
 # This will handle the user input and update the graphics
 def Chess():
@@ -109,7 +112,7 @@ def Chess():
     playerClicks = [] # Keep track of the player clicks (two tuples: [(6, 4), (4, 4)])
 
     # For the AI to play
-    AI_thinking = False
+    ai_thinking = False
     move_find_process = None
 
     gameOver = False
@@ -172,12 +175,41 @@ def Chess():
 
         # The Ai move finder object
         if not gameOver and not isHumanTurn:
-            AIMove = ChessAi.find_best_move(gs, valid_moves)
-            if AIMove is None:
-                AIMove = ChessAi.find_random_move(valid_moves)
-            gs.make_move(AIMove)
-            moveMade = True
-            animate = True
+            multiprocessing.freeze_support()
+            processes = []
+            num = 10
+            if not ai_thinking:
+                print("Thinking...")
+                ai_thinking = True
+                return_queue = Queue()
+
+                for i in range(num):
+                    move_find_process = mp.Process(target=ChessAi.find_best_move, args=(gs, valid_moves, return_queue))
+                    processes.append(move_find_process)
+                
+                for process in processes:
+                    process.start()
+
+                for process in processes:
+                    process.join()
+
+            if not move_find_process.is_alive():
+                move = return_queue.get()
+                gs.make_move(move)
+                if move is None:
+                    move = ChessAi.find_random_move(gs, valid_moves)
+                moveMade = True
+                animate = True
+                ai_thinking = False
+                mixer.Sound(PieceMovedPath).play()
+
+
+            # AIMove = ChessAi.find_best_move(gs, valid_moves)
+            # if AIMove is None:
+            #     AIMove = ChessAi.find_random_move(valid_moves)
+            # gs.make_move(AIMove)
+            # moveMade = True
+            # animate = True
             # mixer.Sound(PieceMovedPath).play()
 
         if moveMade:
